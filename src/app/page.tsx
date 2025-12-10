@@ -25,48 +25,50 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f3f7fb] text-foreground">
       <div className="flex flex-col gap-14 pb-20">
-        <div className="w-full bg-gradient-to-br from-brand to-brand-secondary text-white shadow-[0_28px_80px_rgba(0,48,94,0.25)]">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 pb-12 pt-8 sm:px-8 lg:px-12">
-            <Header />
-            <section className="grid items-center gap-10 rounded-[28px] bg-white/5 px-8 py-10 sm:grid-cols-[1.3fr_1fr] sm:px-10">
-              <div className="flex flex-col gap-5">
-                <div className="flex items-center gap-3">
-                  <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/30 bg-white/20">
-                    <Image
-                      src="/logo.png"
-                      alt="Le Debrief Podcast"
-                      fill
-                      sizes="48px"
-                      className="object-cover"
-                    />
-                  </div>
-                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-white/90">
-                  Le Debrief Podcast
-                </span>
-                </div>
+        <div className="w-full bg-[#0c79c5] shadow-sm">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-4 py-4 text-sm font-semibold text-white sm:px-8 lg:px-12">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo-banner.svg"
+                alt="Le Debrief Podcast"
+                width={180}
+                height={56}
+                className="h-10 w-auto object-contain"
+                priority
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#episodes">
+                Episodes
+              </a>
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#about">
+                About
+              </a>
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#newsletter">
+                Newsletter
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <section className="relative overflow-hidden text-white shadow-[0_28px_80px_rgba(0,48,94,0.25)]">
+          <Image
+            src="/logo.png"
+            alt="Le Debrief Podcast"
+            fill
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/65 to-black/55" />
+          <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-10 sm:px-8 lg:px-12">
+            <div className="grid items-center gap-12 sm:grid-cols-[1.1fr_0.9fr]">
+              <div className="flex flex-col gap-6">
                 <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
-                  Le podcast qui décortique les routines et idées pour avancer plus
-                  vite.
+                  Le podcast qui décortique les routines et idées pour avancer plus vite.
                 </h1>
                 <p className="max-w-2xl text-lg text-white/85">
-                  Avec Wesley & Sacha Bentura. Des conversations franches, des
-                  méthodes concrètes, des invités inspirants. Transcriptions et
-                  notes dispo à chaque épisode.
+                  Avec Wesley & Sacha Bentura. Des conversations franches, des méthodes concrètes, des invités inspirants. Transcriptions et notes dispo à chaque épisode.
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  <a
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-base font-semibold text-brand shadow-md transition hover:shadow-lg"
-                    href="#dernier-episode"
-                  >
-                    Écouter le dernier épisode
-                  </a>
-                  <a
-                    className="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-3 text-base font-semibold text-white transition hover:bg-white/10"
-                    href="#newsletter"
-                  >
-                    S’abonner à la newsletter
-                  </a>
-                </div>
                 <div className="flex flex-wrap gap-3 text-sm text-white/85">
                   {listeningLinks.map((item) => (
                     <a
@@ -81,43 +83,42 @@ export default function Home() {
                     </a>
                   ))}
                 </div>
+                <form
+                  action="/api/newsletter"
+                  method="post"
+                  className="mt-4 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:items-center sm:gap-2"
+                >
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    className="w-full rounded-full border border-white/30 bg-white/10 px-4 py-3 text-white placeholder:text-white/60 outline-none focus:border-brand-secondary"
+                    placeholder="Entre ton email"
+                  />
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-full bg-brand-secondary px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand"
+                  >
+                    Subscribe
+                  </button>
+                </form>
               </div>
 
-              <div className="relative">
-                <div className="absolute -left-8 -top-8 h-24 w-24 rounded-full bg-white/15 blur-3xl" />
-                <div className="absolute -right-10 bottom-2 h-40 w-40 rounded-full bg-brand-accent/35 blur-3xl" />
-                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/10 backdrop-blur">
-                  <div className="flex items-center justify-between px-5 py-4 text-sm text-white/80">
-                    <span>Dernier extrait</span>
-                    <span className="flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-                      🎙️ Wesley & Sacha
-                    </span>
-                  </div>
-                  <div className="space-y-3 bg-white/5 px-5 py-6 text-white">
-                    <h3 className="text-xl font-semibold leading-snug">
-                      Gérer ses priorités et rester focus au quotidien
-                    </h3>
-                    <p className="text-white/80">
-                      Un extrait de l’épisode à paraître cette semaine. Notes et
-                      transcription disponibles dès la sortie.
-                    </p>
-                    <div className="flex flex-wrap gap-2 text-xs text-white/75">
-                      <span className="rounded-full bg-white/12 px-3 py-1">
-                        30 min
-                      </span>
-                      <span className="rounded-full bg-white/12 px-3 py-1">
-                        Transcription incluse
-                      </span>
-                      <span className="rounded-full bg-white/12 px-3 py-1">
-                        Français
-                      </span>
-                    </div>
-                  </div>
+              <div className="space-y-4 text-white/90">
+                <div className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur">
+                  <p className="text-base leading-relaxed">
+                    « Les priorités de la population moderne sont dispersées. On croit à l’immatériel, d’autres le nient. Alors, comment rester aligné ? »
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <span className="rounded-full bg-white/10 px-3 py-1">Transcriptions incluses</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1">30 min</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1">Français</span>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
-        </div>
+        </section>
 
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-14 px-4 sm:px-8 lg:px-12">
           <section
@@ -299,46 +300,6 @@ export default function Home() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Header() {
-  return (
-    <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white/80 px-6 py-4 shadow-md ring-1 ring-black/5 backdrop-blur">
-      <div className="flex items-center gap-3">
-        <Image src="/logo.png" alt="Le Debrief Podcast" width={48} height={48} />
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-            Le Debrief Podcast
-          </p>
-          <p className="text-base font-semibold text-foreground">
-            Wesley & Sacha Bentura
-          </p>
-        </div>
-      </div>
-      <nav className="flex flex-wrap items-center gap-3 text-sm font-semibold text-muted">
-        <a className="rounded-full px-3 py-2 hover:text-brand" href="#episodes">
-          Épisodes
-        </a>
-        <a className="rounded-full px-3 py-2 hover:text-brand" href="#newsletter">
-          Newsletter
-        </a>
-        <a
-          className="rounded-full px-3 py-2 hover:text-brand"
-          href="https://www.youtube.com/@ledebrief_podcast"
-          target="_blank"
-          rel="noreferrer"
-        >
-          YouTube
-        </a>
-        <Link
-          href="#dernier-episode"
-          className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-white shadow-sm transition hover:bg-brand-secondary"
-        >
-          ▶️ Dernier épisode
-        </Link>
-      </nav>
-    </header>
   );
 }
 
