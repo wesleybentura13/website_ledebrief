@@ -1,0 +1,14 @@
+<svg width="320" height="120" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b74c7"/>
+      <stop offset="100%" stop-color="#4aa9ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="120" rx="20" fill="url(#bg)"/>
+  <text x="24" y="70" fill="white" font-family="Arial, sans-serif" font-weight="700" font-size="36" letter-spacing="-0.5">
+    le débrïef
+  </text>
+  <rect x="24" y="78" width="140" height="10" rx="5" fill="#10e0d1" opacity="0.8"/>
+</svg>
+
