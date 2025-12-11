@@ -6,19 +6,14 @@ export default function Home() {
       <div className="flex flex-col gap-14 pb-20">
         <div className="relative w-full bg-[#0c79c5] shadow-sm">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 sm:px-8 lg:px-12">
-            <div className="group relative inline-flex">
-              <Image
-                src="/logo-banner.svg"
-                alt="Le Debrief Podcast"
-                width={320}
-                height={80}
-                className="h-14 w-auto object-contain"
-                priority
-              />
-              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden w-[260px] -translate-x-1/2 rounded-2xl bg-white/18 px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_35px_rgba(0,0,0,0.35)] backdrop-blur-md ring-1 ring-white/25 group-hover:block">
-                “Le podcast qui traite tous les sujets à notre sauce.”
-              </div>
-            </div>
+            <Image
+              src="/logo-banner.svg"
+              alt="Le Debrief Podcast"
+              width={320}
+              height={80}
+              className="h-14 w-auto object-contain"
+              priority
+            />
             <div className="flex items-center gap-4 text-sm font-semibold text-white">
               <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#episodes">
                 Episodes
@@ -46,11 +41,11 @@ export default function Home() {
                   priority
                 />
                 <div className="absolute inset-0 flex items-end justify-end p-5 pb-6">
-                  <div className="max-w-sm rounded-2xl bg-white/18 px-5 py-4 text-white shadow-[0_12px_35px_rgba(0,0,0,0.35)] backdrop-blur-md ring-1 ring-white/25">
-                    <p className="text-lg font-semibold leading-snug sm:text-xl">
+                  <div className="max-w-sm rounded-2xl bg-white/90 px-5 py-4 text-black shadow-[0_12px_35px_rgba(0,0,0,0.15)] ring-1 ring-black/10">
+                    <p className="text-lg font-semibold leading-snug sm:text-xl text-black">
                       “Nous vous proposons nos points de vus uniques que ce soit dans le sport, le cinema ou la finance mais aussi bien d&apos;autres ...”
                     </p>
-                    <p className="mt-3 text-sm font-semibold text-white/85">Wesley Bentura</p>
+                    <p className="mt-3 text-sm font-semibold text-black/75">Wesley Bentura</p>
                   </div>
                 </div>
               </div>
@@ -65,11 +60,11 @@ export default function Home() {
                   className="h-auto w-full object-cover"
                 />
                 <div className="absolute inset-0 flex items-end justify-start p-5 pb-6">
-                  <div className="max-w-sm rounded-2xl bg-white/18 px-5 py-4 text-white shadow-[0_12px_35px_rgba(0,0,0,0.35)] backdrop-blur-md ring-1 ring-white/25">
-                    <p className="text-lg font-semibold leading-snug sm:text-xl">
+                  <div className="max-w-sm rounded-2xl bg-white/90 px-5 py-4 text-black shadow-[0_12px_35px_rgba(0,0,0,0.15)] ring-1 ring-black/10">
+                    <p className="text-lg font-semibold leading-snug sm:text-xl text-black">
                       “le debrief, c&apos;est le podcast qui traite de tous les sujets à notre sauce”
                     </p>
-                    <p className="mt-3 text-sm font-semibold text-white/85">Sacha Bentura</p>
+                    <p className="mt-3 text-sm font-semibold text-black/75">Sacha Bentura</p>
                   </div>
                 </div>
               </div>
