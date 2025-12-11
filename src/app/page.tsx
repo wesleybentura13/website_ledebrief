@@ -75,6 +75,42 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm font-semibold text-foreground sm:justify-center">
+            <span className="text-muted">Écouter & suivre :</span>
+            <a
+              className="rounded-full bg-brand px-4 py-2 text-white shadow-md transition hover:bg-brand-secondary"
+              href="https://www.youtube.com/@ledebrief_podcast"
+              target="_blank"
+              rel="noreferrer"
+            >
+              YouTube
+            </a>
+            <a
+              className="rounded-full bg-[#1DB954] px-4 py-2 text-white shadow-md transition hover:brightness-95"
+              href="https://open.spotify.com/show/2MA341D762SdA7azTQYdxw?si=8b89694c282348b0"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Spotify
+            </a>
+            <a
+              className="rounded-full bg-[#E4405F] px-4 py-2 text-white shadow-md transition hover:brightness-95"
+              href="https://www.instagram.com/ledebrief_podcast/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Instagram
+            </a>
+            <a
+              className="rounded-full bg-black px-4 py-2 text-white shadow-md transition hover:brightness-110"
+              href="https://www.tiktok.com/@ledebrief_podcast"
+              target="_blank"
+              rel="noreferrer"
+            >
+              TikTok
+            </a>
+          </div>
         </section>
       </div>
     </div>
