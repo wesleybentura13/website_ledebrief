@@ -29,24 +29,26 @@ export default function Home() {
         </div>
 
         <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-20 pt-8 sm:px-8 lg:px-12">
-          <div className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5">
-            <Image
-              src="/images/74.png"
-              alt="Le Debrief Podcast highlight"
-              width={1600}
-              height={900}
-              className="h-auto w-full object-cover"
-              priority
-            />
-          </div>
-          <div className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5">
-            <Image
-              src="/images/75.png"
-              alt="Le Debrief Podcast highlight 2"
-              width={1600}
-              height={900}
-              className="h-auto w-full object-cover"
-            />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="order-1 overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 lg:order-2">
+              <Image
+                src="/images/74.png"
+                alt="Le Debrief Podcast highlight"
+                width={1600}
+                height={900}
+                className="h-auto w-full object-cover"
+                priority
+              />
+            </div>
+            <div className="order-2 overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 lg:order-1">
+              <Image
+                src="/images/75.png"
+                alt="Le Debrief Podcast highlight 2"
+                width={1600}
+                height={900}
+                className="h-auto w-full object-cover"
+              />
+            </div>
           </div>
         </section>
       </div>
