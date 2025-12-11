@@ -28,9 +28,9 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="mx-auto flex w-full max-w-6xl flex-col gap-0 px-0 pb-20 pt-0 sm:px-0 lg:px-0">
-          <div className="grid gap-0 lg:grid-cols-2">
-            <div className="order-1 overflow-hidden bg-white shadow-md ring-1 ring-black/5 lg:order-2">
+        <section className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 pb-16 pt-4 sm:px-6 lg:px-8">
+          <div className="grid gap-2 lg:grid-cols-2">
+            <div className="order-1 overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 lg:order-2">
               <Image
                 src="/images/74.png"
                 alt="Le Debrief Podcast highlight"
@@ -40,7 +40,7 @@ export default function Home() {
                 priority
               />
             </div>
-            <div className="order-2 overflow-hidden bg-white shadow-md ring-1 ring-black/5 lg:order-1">
+            <div className="order-2 overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 lg:order-1">
               <Image
                 src="/images/75.png"
                 alt="Le Debrief Podcast highlight 2"
