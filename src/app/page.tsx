@@ -15,7 +15,7 @@ export default function Home() {
               priority
             />
             <div className="flex items-center gap-4 text-sm font-semibold text-white">
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#episodes">
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="/episodes">
                 Episodes
               </a>
               <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#about">

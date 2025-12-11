@@ -7,6 +7,8 @@ export type Episode = {
   tags: string[];
   audioUrl?: string;
   transcript: string;
+  youtubeId?: string;
+  thumbnailUrl?: string;
 };
 
 export const episodes: Episode[] = [
