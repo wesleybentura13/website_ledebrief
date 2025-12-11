@@ -25,29 +25,27 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f3f7fb] text-foreground">
       <div className="flex flex-col gap-14 pb-20">
-        <div className="w-full bg-[#0c79c5] shadow-sm">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-4 py-4 text-sm font-semibold text-white sm:px-8 lg:px-12">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo-banner.svg"
-                alt="Le Debrief Podcast"
-                width={180}
-                height={56}
-                className="h-10 w-auto object-contain"
-                priority
-              />
-            </div>
-            <div className="flex items-center gap-4">
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#episodes">
-                Episodes
-              </a>
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#about">
-                About
-              </a>
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#newsletter">
-                Newsletter
-              </a>
-            </div>
+        <div className="relative w-full bg-[#0c79c5] shadow-sm">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-center px-4 py-6 sm:px-8 lg:px-12">
+            <Image
+              src="/logo-banner.svg"
+              alt="Le Debrief Podcast"
+              width={720}
+              height={120}
+              className="h-16 w-full max-w-4xl object-contain"
+              priority
+            />
+          </div>
+          <div className="absolute inset-y-0 right-0 flex items-center gap-4 px-4 text-sm font-semibold text-white sm:px-8 lg:px-12">
+            <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#episodes">
+              Episodes
+            </a>
+            <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#about">
+              About
+            </a>
+            <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#newsletter">
+              Newsletter
+            </a>
           </div>
         </div>
 
