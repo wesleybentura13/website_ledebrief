@@ -4,6 +4,7 @@
  */
 
 import https from "https";
+import http from "http";
 
 const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID || "UCQp1rnvqh08DCfw3ul_D5oA";
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3000";
@@ -16,12 +17,23 @@ interface Episode {
 
 async function fetchEpisodes(): Promise<Episode[]> {
   return new Promise((resolve, reject) => {
-    const url = `${API_BASE_URL}/api/fetch-episodes?channelId=${CHANNEL_ID}`;
+    const urlObj = new URL(`${API_BASE_URL}/api/fetch-episodes`);
+    urlObj.searchParams.set("channelId", CHANNEL_ID);
     
-    https.get(url, { rejectUnauthorized: false }, (res) => {
+    const options = {
+      hostname: urlObj.hostname,
+      port: urlObj.port || (urlObj.protocol === "https:" ? 443 : 80),
+      path: urlObj.pathname + urlObj.search,
+      method: "GET",
+      rejectUnauthorized: false,
+    };
+
+    const client = urlObj.protocol === "https:" ? https : http;
+    
+    client.get(options, (res: any) => {
       let data = "";
-      res.on("data", (chunk) => {
-        data += chunk;
+      res.on("data", (chunk: Buffer) => {
+        data += chunk.toString();
       });
       res.on("end", () => {
         try {
