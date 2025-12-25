@@ -36,28 +36,26 @@ export default function EpisodesPage() {
 
   useEffect(() => {
     // Try to fetch YouTube episodes from the channel
-    // First try with channel ID from env, then try with handle
+    // The channel ID should be in NEXT_PUBLIC_YOUTUBE_CHANNEL_ID env variable
     const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
-    const CHANNEL_HANDLE = "ledebrief_podcast";
     
     const fetchEpisodes = async () => {
       try {
-        let data;
-        
-        if (CHANNEL_ID) {
-          // Try with channel ID first
-          const response = await fetch(`/api/fetch-episodes?channelId=${CHANNEL_ID}`);
-          data = await response.json();
-        } else {
-          // Try with handle
-          const response = await fetch(`/api/youtube-channel?handle=${CHANNEL_HANDLE}`);
-          data = await response.json();
+        if (!CHANNEL_ID) {
+          setError("Channel ID not configured. Please add NEXT_PUBLIC_YOUTUBE_CHANNEL_ID to .env.local");
+          setLoading(false);
+          return;
         }
+        
+        const response = await fetch(`/api/fetch-episodes?channelId=${CHANNEL_ID}`);
+        const data = await response.json();
         
         if (data.episodes && data.episodes.length > 0) {
           setEpisodes(data.episodes);
         } else if (data.error) {
-          setError(data.error);
+          setError(data.error + (data.details ? `: ${data.details}` : ""));
+        } else {
+          setError("No episodes found");
         }
       } catch (err) {
         console.error("Failed to fetch YouTube episodes:", err);

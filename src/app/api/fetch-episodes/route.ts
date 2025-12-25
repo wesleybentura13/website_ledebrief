@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 import Parser from "rss-parser";
+import https from "https";
 
-const parser = new Parser();
+// Configure parser to handle SSL issues
+const parser = new Parser({
+  customFields: {
+    item: [],
+  },
+  requestOptions: {
+    rejectUnauthorized: false, // Allow self-signed certificates (for development)
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    },
+  },
+});
 
 /**
  * Fetches YouTube channel videos and returns them in the same order as YouTube
@@ -30,9 +42,27 @@ export async function GET(request: Request) {
     const feed = await parser.parseURL(feedUrl);
 
     const episodes = feed.items.map((item, index) => {
-      // Extract video ID from YouTube video URL
-      const videoIdMatch = item.link?.match(/[?&]v=([^&]+)/);
-      const videoId = videoIdMatch ? videoIdMatch[1] : "";
+      // Extract video ID from YouTube video URL (handles both regular videos and shorts)
+      let videoId = "";
+      if (item.link) {
+        // Try regular video format: ?v=VIDEO_ID
+        const regularMatch = item.link.match(/[?&]v=([^&]+)/);
+        if (regularMatch) {
+          videoId = regularMatch[1];
+        } else {
+          // Try shorts format: /shorts/VIDEO_ID
+          const shortsMatch = item.link.match(/\/shorts\/([^/?]+)/);
+          if (shortsMatch) {
+            videoId = shortsMatch[1];
+          } else {
+            // Try embed format: /embed/VIDEO_ID
+            const embedMatch = item.link.match(/\/embed\/([^/?]+)/);
+            if (embedMatch) {
+              videoId = embedMatch[1];
+            }
+          }
+        }
+      }
 
       // Extract date
       const publishedDate = item.pubDate ? new Date(item.pubDate).toISOString().split('T')[0] : "";
@@ -41,7 +71,7 @@ export async function GET(request: Request) {
         youtubeId: videoId,
         title: item.title || "",
         date: publishedDate,
-        thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        thumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "",
         description: item.contentSnippet || item.content || "",
         link: item.link || "",
         // Generate a slug from title
