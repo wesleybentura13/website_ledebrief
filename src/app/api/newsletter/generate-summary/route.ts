@@ -30,19 +30,42 @@ export async function POST(request: Request) {
     }
 
     // First, fetch the transcript
-    const transcriptResponse = await fetch(
-      `${request.url.split("/api")[0]}/api/newsletter/transcript?videoId=${videoId}`
-    );
-    const transcriptData = await transcriptResponse.json();
+    // Try multiple methods to get the transcript
+    let transcript = "";
+    let transcriptError = "";
 
-    if (!transcriptData.transcript) {
+    try {
+      const baseUrl = request.url.split("/api")[0];
+      const transcriptResponse = await fetch(
+        `${baseUrl}/api/newsletter/transcript?videoId=${videoId}`,
+        {
+          // Add timeout
+          signal: AbortSignal.timeout(30000), // 30 second timeout
+        }
+      );
+      const transcriptData = await transcriptResponse.json();
+
+      if (transcriptData.transcript) {
+        transcript = transcriptData.transcript;
+      } else {
+        transcriptError = transcriptData.error || "No transcript available";
+      }
+    } catch (error) {
+      transcriptError = error instanceof Error ? error.message : String(error);
+      console.error("Error fetching transcript:", error);
+    }
+
+    if (!transcript || transcript.trim().length === 0) {
       return NextResponse.json(
-        { error: "Could not fetch transcript for this video" },
+        {
+          error: "Could not fetch transcript for this video",
+          details: transcriptError,
+          note: "Please ensure the video has captions enabled in YouTube Studio. You can enable auto-generated captions.",
+          suggestion: "Go to YouTube Studio > Videos > Select video > Subtitles > Add language > Auto-generate",
+        },
         { status: 400 }
       );
     }
-
-    const transcript = transcriptData.transcript;
 
     // Generate summary using OpenAI
     const openaiApiKey = process.env.OPENAI_API_KEY;
