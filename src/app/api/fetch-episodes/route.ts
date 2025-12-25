@@ -96,16 +96,18 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
       nextPageToken = apiData.nextPageToken;
     } while (nextPageToken);
 
-    // Get video details (including duration) to filter out shorts
+    // Get video details (including duration and statistics like view count)
     // Batch requests (max 50 video IDs per request)
     const allVideoIds = allVideos.map((item: any) => item.id.videoId);
     const durationMap: { [key: string]: number } = {};
+    const statisticsMap: { [key: string]: any } = {};
     
     // Process in batches of 50
     for (let i = 0; i < allVideoIds.length; i += 50) {
       const batch = allVideoIds.slice(i, i + 50);
       const videoIds = batch.join(',');
-      const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds}&part=contentDetails`;
+      // Include both contentDetails (for duration) and statistics (for view count)
+      const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds}&part=contentDetails,statistics`;
       
       try {
         const videoDetails: any = await new Promise((resolve, reject) => {
@@ -126,6 +128,8 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
           videoDetails.items.forEach((item: any) => {
             const duration = parseDuration(item.contentDetails.duration);
             durationMap[item.id] = duration;
+            // Store statistics (view count, etc.)
+            statisticsMap[item.id] = item.statistics || {};
           });
         }
       } catch (error) {
@@ -142,6 +146,9 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
         const rawTitle = item.snippet.title || "";
         const decodedTitle = decodeHtmlEntities(rawTitle);
         
+        const stats = statisticsMap[videoId] || {};
+        const viewCount = stats.viewCount ? parseInt(stats.viewCount, 10) : 0;
+
         return {
           youtubeId: videoId,
           title: decodedTitle,
@@ -150,6 +157,7 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
           description: decodeHtmlEntities(item.snippet.description || ""),
           link: `https://www.youtube.com/watch?v=${videoId}`,
           duration: duration,
+          viewCount: viewCount,
           slug: decodedTitle
             ?.toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")

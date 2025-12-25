@@ -27,6 +27,18 @@ interface Episode {
   youtubeId: string;
   thumbnailUrl: string;
   link?: string;
+  viewCount?: number;
+}
+
+// Format view count (e.g., 1234 -> "1.2K", 1234567 -> "1.2M")
+function formatViewCount(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}M`;
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}K`;
+  }
+  return count.toString();
 }
 
 export default function EpisodesPage() {
@@ -60,9 +72,8 @@ export default function EpisodesPage() {
             };
             const numA = getEpisodeNumber(a.title);
             const numB = getEpisodeNumber(b.title);
-            // Sort descending (newest first) or ascending (oldest first)?
-            // User wants #1, #2, #3... so ascending (oldest first)
-            return numA - numB;
+          // Sort descending (newest first) - #34, #33, #32... #1
+          return numB - numA;
           });
           setEpisodes(sortedEpisodes);
         } else if (data.error) {
@@ -185,11 +196,18 @@ export default function EpisodesPage() {
                         <h2 className="mb-2 line-clamp-2 text-sm font-semibold leading-tight text-foreground group-hover:text-brand">
                           {episode.title}
                         </h2>
-                        {episode.date && (
-                          <p className="text-xs text-foreground/60">
-                            {formatDate(episode.date)}
-                          </p>
-                        )}
+                        <div className="flex items-center justify-between gap-2">
+                          {episode.date && (
+                            <p className="text-xs text-foreground/60">
+                              {formatDate(episode.date)}
+                            </p>
+                          )}
+                          {episode.viewCount !== undefined && (
+                            <p className="text-xs font-medium text-foreground/70">
+                              {formatViewCount(episode.viewCount)} vues
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   </article>
