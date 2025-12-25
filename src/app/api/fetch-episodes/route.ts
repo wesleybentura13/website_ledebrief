@@ -12,6 +12,39 @@ function parseDuration(duration: string): number {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
+// Decode HTML entities in text
+function decodeHtmlEntities(text: string): string {
+  if (!text) return text;
+  
+  // Common HTML entities mapping
+  const entities: { [key: string]: string } = {
+    '&#39;': "'",
+    '&apos;': "'",
+    '&quot;': '"',
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&nbsp;': ' ',
+    '&#8217;': "'",
+    '&#8216;': "'",
+    '&#8220;': '"',
+    '&#8221;': '"',
+  };
+  
+  let decoded = text;
+  // Replace numeric entities like &#39;
+  decoded = decoded.replace(/&#(\d+);/g, (match, num) => {
+    return String.fromCharCode(parseInt(num, 10));
+  });
+  
+  // Replace named entities
+  for (const [entity, char] of Object.entries(entities)) {
+    decoded = decoded.replace(new RegExp(entity, 'g'), char);
+  }
+  
+  return decoded;
+}
+
 // Configure parser to handle SSL issues
 const parser = new Parser({
   customFields: {
@@ -106,15 +139,18 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
         const publishedDate = item.snippet.publishedAt ? new Date(item.snippet.publishedAt).toISOString().split('T')[0] : "";
         const duration = durationMap[videoId] || 0;
 
+        const rawTitle = item.snippet.title || "";
+        const decodedTitle = decodeHtmlEntities(rawTitle);
+        
         return {
           youtubeId: videoId,
-          title: item.snippet.title || "",
+          title: decodedTitle,
           date: publishedDate,
           thumbnailUrl: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-          description: item.snippet.description || "",
+          description: decodeHtmlEntities(item.snippet.description || ""),
           link: `https://www.youtube.com/watch?v=${videoId}`,
           duration: duration,
-          slug: item.snippet.title
+          slug: decodedTitle
             ?.toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/(^-|-$)/g, "") || `episode-${videoId}`,
@@ -210,15 +246,18 @@ export async function GET(request: Request) {
       // Extract date
       const publishedDate = item.pubDate ? new Date(item.pubDate).toISOString().split('T')[0] : "";
 
+      const rawTitle = item.title || "";
+      const decodedTitle = decodeHtmlEntities(rawTitle);
+
       return {
         youtubeId: videoId,
-        title: item.title || "",
+        title: decodedTitle,
         date: publishedDate,
         thumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "",
-        description: item.contentSnippet || item.content || "",
+        description: decodeHtmlEntities(item.contentSnippet || item.content || ""),
         link: item.link || "",
         // Generate a slug from title
-        slug: item.title
+        slug: decodedTitle
           ?.toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "") || `episode-${index + 1}`,
