@@ -21,7 +21,7 @@ export default function Home() {
               <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="/about">
                 About
               </a>
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#newsletter">
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="/newsletter">
                 Newsletter
               </a>
             </div>
