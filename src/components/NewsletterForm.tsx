@@ -42,44 +42,48 @@ export default function NewsletterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-md">
-      <div className="mb-4">
-        <label htmlFor="firstName" className="mb-2 block text-sm font-semibold text-foreground">
-          Prénom (optionnel)
-        </label>
-        <input
-          type="text"
-          id="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-4 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-          placeholder="Votre prénom"
-        />
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+      <div className="mb-6 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="firstName" className="mb-2 block text-sm font-semibold text-foreground">
+            Prénom (optionnel)
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-foreground transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            placeholder="Votre prénom"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="mb-2 block text-sm font-semibold text-foreground">
+            Email <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-foreground transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            placeholder="votre@email.com"
+          />
+        </div>
       </div>
-      <div className="mb-4">
-        <label htmlFor="email" className="mb-2 block text-sm font-semibold text-foreground">
-          Email <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full rounded-lg border border-slate-300 px-4 py-2 text-foreground focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-          placeholder="votre@email.com"
-        />
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="rounded-full bg-brand px-8 py-3 text-base font-semibold text-white shadow-md transition hover:bg-brand-secondary disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {status === "loading" ? "Inscription..." : "S'abonner à la newsletter"}
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="w-full rounded-full bg-brand px-6 py-3 text-base font-semibold text-white shadow-md transition hover:bg-brand-secondary disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {status === "loading" ? "Inscription..." : "S'abonner à la newsletter"}
-      </button>
       {message && (
         <div
-          className={`mt-4 rounded-lg px-4 py-3 text-sm ${
+          className={`mt-6 rounded-lg px-4 py-3 text-sm text-center ${
             status === "success"
               ? "bg-green-50 text-green-800"
               : "bg-red-50 text-red-800"
