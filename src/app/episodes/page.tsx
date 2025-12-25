@@ -148,8 +148,12 @@ export default function EpisodesPage() {
         {!loading && !error && (
           <>
             {episodes.length > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {episodes.map((episode) => (
+              <>
+                <div className="mb-4 text-sm text-foreground/70">
+                  {episodes.length} épisode{episodes.length > 1 ? 's' : ''} disponible{episodes.length > 1 ? 's' : ''}
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {episodes.map((episode) => (
                   <article
                     key={episode.slug}
                     className="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition hover:shadow-lg hover:ring-black/10"
@@ -189,8 +193,9 @@ export default function EpisodesPage() {
                       </div>
                     </Link>
                   </article>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="rounded-2xl bg-white p-12 text-center shadow-md ring-1 ring-black/5">
                 <p className="text-lg text-foreground/70">Aucun épisode disponible pour le moment.</p>
