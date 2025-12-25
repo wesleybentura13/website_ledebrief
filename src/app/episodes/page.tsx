@@ -3,76 +3,72 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { episodes as staticEpisodes } from "@/lib/episodes";
 
-const formatDate = (date: string) =>
-  new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
+const formatDate = (date: string) => {
+  try {
+    return new Intl.DateTimeFormat("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(date));
+  } catch {
+    return date;
+  }
+};
 
-interface YouTubeVideo {
-  id: string;
+interface Episode {
+  slug: string;
   title: string;
-  publishedAt: string;
-  thumbnail: string;
-  description: string;
-  link: string;
+  date: string;
+  duration?: string;
+  summary?: string;
+  tags?: string[];
+  transcript?: string;
+  youtubeId: string;
+  thumbnailUrl: string;
+  link?: string;
 }
 
 export default function EpisodesPage() {
-  const [youtubeEpisodes, setYoutubeEpisodes] = useState<YouTubeVideo[]>([]);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to fetch YouTube episodes from the channel
-    // The channel ID can be found by going to https://www.youtube.com/@ledebrief_podcast
-    // View page source and search for "channelId"
+    // First try with channel ID from env, then try with handle
     const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
+    const CHANNEL_HANDLE = "ledebrief_podcast";
     
-    if (CHANNEL_ID) {
-      fetch(`/api/fetch-episodes?channelId=${CHANNEL_ID}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.episodes) {
-            setYoutubeEpisodes(data.episodes);
-          }
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch YouTube episodes:", err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  // Merge static episodes with YouTube data
-  // If we have YouTube episodes, use those; otherwise use static episodes
-  const allEpisodes = youtubeEpisodes.length > 0
-    ? youtubeEpisodes.map((ytEpisode) => ({
-        slug: ytEpisode.slug || `episode-${ytEpisode.id}`,
-        title: ytEpisode.title,
-        date: ytEpisode.publishedAt || new Date().toISOString().split('T')[0],
-        duration: "", // YouTube doesn't provide duration in RSS
-        summary: (ytEpisode.description || "").substring(0, 150) + (ytEpisode.description && ytEpisode.description.length > 150 ? "..." : ""),
-        tags: [],
-        transcript: "",
-        youtubeId: ytEpisode.id,
-        thumbnailUrl: ytEpisode.thumbnail,
-        thumbnail: ytEpisode.thumbnail,
-      }))
-    : staticEpisodes.map((episode) => {
-        if (episode.youtubeId) {
-          return {
-            ...episode,
-            thumbnail: episode.thumbnailUrl || `https://img.youtube.com/vi/${episode.youtubeId}/maxresdefault.jpg`,
-          };
+    const fetchEpisodes = async () => {
+      try {
+        let data;
+        
+        if (CHANNEL_ID) {
+          // Try with channel ID first
+          const response = await fetch(`/api/fetch-episodes?channelId=${CHANNEL_ID}`);
+          data = await response.json();
+        } else {
+          // Try with handle
+          const response = await fetch(`/api/youtube-channel?handle=${CHANNEL_HANDLE}`);
+          data = await response.json();
         }
-        return episode;
-      });
+        
+        if (data.episodes && data.episodes.length > 0) {
+          setEpisodes(data.episodes);
+        } else if (data.error) {
+          setError(data.error);
+        }
+      } catch (err) {
+        console.error("Failed to fetch YouTube episodes:", err);
+        setError("Impossible de charger les épisodes. Veuillez vérifier la configuration.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEpisodes();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f3f7fb] text-foreground">
@@ -110,84 +106,86 @@ export default function EpisodesPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {allEpisodes.map((episode) => (
-            <article
-              key={episode.slug}
-              className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-xl"
-            >
-              {episode.youtubeId ? (
-                <div className="relative aspect-video w-full overflow-hidden bg-slate-200">
-                  <img
-                      src={episode.thumbnail || `https://img.youtube.com/vi/${episode.youtubeId}/maxresdefault.jpg`}
-                      alt={episode.title}
-                      className="h-full w-full object-cover"
-                    />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition group-hover:bg-black/30">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg">
-                      <svg
-                        className="ml-1 h-6 w-6 text-brand"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative aspect-video w-full bg-gradient-to-br from-brand to-brand-secondary" />
-              )}
-
-              <div className="p-5">
-                <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-                  <span className="rounded-full bg-brand/10 px-2.5 py-1 text-brand">
-                    {formatDate(episode.date)}
-                  </span>
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-foreground/70">
-                    {episode.duration}
-                  </span>
-                </div>
-
-                <h2 className="mb-2 text-lg font-semibold leading-tight text-foreground line-clamp-2">
-                  {episode.title}
-                </h2>
-
-                <p className="mb-4 text-sm leading-relaxed text-foreground/70 line-clamp-2">
-                  {episode.summary}
-                </p>
-
-                {episode.youtubeId && (
-                  <div className="mt-4">
-                    <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={`https://www.youtube.com/embed/${episode.youtubeId}?rel=0`}
-                        title={episode.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        className="h-full w-full"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <Link
-                  href={`/episodes/${episode.slug}`}
-                  className="mt-4 inline-block rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-secondary"
-                >
-                  Voir plus
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {allEpisodes.length === 0 && (
-          <div className="rounded-2xl bg-white p-12 text-center shadow-md ring-1 ring-black/5">
-            <p className="text-lg text-foreground/70">Aucun épisode disponible pour le moment.</p>
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+              <p className="text-foreground/70">Chargement des épisodes...</p>
+            </div>
           </div>
+        )}
+
+        {error && (
+          <div className="rounded-2xl bg-yellow-50 p-8 shadow-md ring-1 ring-yellow-200">
+            <p className="mb-4 text-lg font-semibold text-yellow-800">⚠️ {error}</p>
+            <div className="space-y-3 text-left text-sm text-yellow-700">
+              <p className="font-semibold">Pour afficher vos épisodes YouTube :</p>
+              <ol className="ml-4 list-decimal space-y-2">
+                <li>Allez sur <a href="https://www.youtube.com/@ledebrief_podcast" target="_blank" rel="noopener noreferrer" className="text-brand underline">votre chaîne YouTube</a></li>
+                <li>Faites un clic droit → "Afficher le code source" (ou Cmd+Option+U sur Mac)</li>
+                <li>Appuyez sur Cmd+F (Mac) ou Ctrl+F (Windows) pour rechercher</li>
+                <li>Cherchez <code className="rounded bg-yellow-100 px-1.5 py-0.5">"channelId"</code></li>
+                <li>Copiez l'ID (il ressemble à <code className="rounded bg-yellow-100 px-1.5 py-0.5">UCxxxxxxxxxxxxxxxxxxxxx</code>)</li>
+                <li>Créez un fichier <code className="rounded bg-yellow-100 px-1.5 py-0.5">.env.local</code> à la racine du projet</li>
+                <li>Ajoutez : <code className="block rounded bg-yellow-100 px-2 py-1 mt-2">NEXT_PUBLIC_YOUTUBE_CHANNEL_ID=VOTRE_CHANNEL_ID</code></li>
+                <li>Redémarrez le serveur de développement</li>
+              </ol>
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            {episodes.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {episodes.map((episode) => (
+                  <article
+                    key={episode.slug}
+                    className="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition hover:shadow-lg hover:ring-black/10"
+                  >
+                    <Link href={episode.link || `https://www.youtube.com/watch?v=${episode.youtubeId}`} target="_blank" rel="noopener noreferrer">
+                      <div className="relative aspect-video w-full overflow-hidden bg-slate-200">
+                        <img
+                          src={episode.thumbnailUrl}
+                          alt={episode.title}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/20">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 shadow-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                            <svg
+                              className="ml-1 h-6 w-6 text-brand"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="absolute bottom-2 right-2 rounded bg-black/80 px-1.5 py-0.5 text-xs font-semibold text-white">
+                          YouTube
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h2 className="mb-2 line-clamp-2 text-sm font-semibold leading-tight text-foreground group-hover:text-brand">
+                          {episode.title}
+                        </h2>
+                        {episode.date && (
+                          <p className="text-xs text-foreground/60">
+                            {formatDate(episode.date)}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl bg-white p-12 text-center shadow-md ring-1 ring-black/5">
+                <p className="text-lg text-foreground/70">Aucun épisode disponible pour le moment.</p>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
