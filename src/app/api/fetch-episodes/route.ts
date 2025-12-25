@@ -2,6 +2,16 @@ import { NextResponse } from "next/server";
 import Parser from "rss-parser";
 import https from "https";
 
+// Parse YouTube duration format (PT1M30S) to seconds
+function parseDuration(duration: string): number {
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  const hours = parseInt(match[1] || '0', 10);
+  const minutes = parseInt(match[2] || '0', 10);
+  const seconds = parseInt(match[3] || '0', 10);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
 // Configure parser to handle SSL issues
 const parser = new Parser({
   customFields: {
@@ -26,16 +36,25 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
     do {
       const apiUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&type=video&maxResults=50&order=date${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
       
-      const apiResponse = await fetch(apiUrl, {
-        // @ts-ignore - Node.js fetch doesn't have rejectUnauthorized in options
-        agent: new https.Agent({ rejectUnauthorized: false }),
+      // Use https module directly to handle SSL issues
+      const apiData: any = await new Promise((resolve, reject) => {
+        https.get(apiUrl, { rejectUnauthorized: false }, (res) => {
+          let data = '';
+          res.on('data', (chunk) => { data += chunk; });
+          res.on('end', () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }).on('error', reject);
       });
       
-      if (!apiResponse.ok) {
-        throw new Error(`YouTube API error: ${apiResponse.status}`);
+      if (apiData.error) {
+        console.error('YouTube API returned error:', apiData.error);
+        throw new Error(`YouTube API error: ${apiData.error.message || JSON.stringify(apiData.error)}`);
       }
-
-      const apiData: any = await apiResponse.json();
       
       if (apiData.items) {
         allVideos = allVideos.concat(apiData.items);
@@ -44,23 +63,67 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
       nextPageToken = apiData.nextPageToken;
     } while (nextPageToken);
 
-    return allVideos.map((item: any) => {
-      const videoId = item.id.videoId;
-      const publishedDate = item.snippet.publishedAt ? new Date(item.snippet.publishedAt).toISOString().split('T')[0] : "";
+    // Get video details (including duration) to filter out shorts
+    // Batch requests (max 50 video IDs per request)
+    const allVideoIds = allVideos.map((item: any) => item.id.videoId);
+    const durationMap: { [key: string]: number } = {};
+    
+    // Process in batches of 50
+    for (let i = 0; i < allVideoIds.length; i += 50) {
+      const batch = allVideoIds.slice(i, i + 50);
+      const videoIds = batch.join(',');
+      const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds}&part=contentDetails`;
+      
+      try {
+        const videoDetails: any = await new Promise((resolve, reject) => {
+          https.get(detailsUrl, { rejectUnauthorized: false }, (res) => {
+            let data = '';
+            res.on('data', (chunk) => { data += chunk; });
+            res.on('end', () => {
+              try {
+                resolve(JSON.parse(data));
+              } catch (e) {
+                reject(e);
+              }
+            });
+          }).on('error', reject);
+        });
 
-      return {
-        youtubeId: videoId,
-        title: item.snippet.title || "",
-        date: publishedDate,
-        thumbnailUrl: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        description: item.snippet.description || "",
-        link: `https://www.youtube.com/watch?v=${videoId}`,
-        slug: item.snippet.title
-          ?.toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "") || `episode-${videoId}`,
-      };
-    });
+        if (videoDetails.items) {
+          videoDetails.items.forEach((item: any) => {
+            const duration = parseDuration(item.contentDetails.duration);
+            durationMap[item.id] = duration;
+          });
+        }
+      } catch (error) {
+        console.error(`Error fetching video details for batch ${i}:`, error);
+      }
+    }
+
+    return allVideos
+      .map((item: any) => {
+        const videoId = item.id.videoId;
+        const publishedDate = item.snippet.publishedAt ? new Date(item.snippet.publishedAt).toISOString().split('T')[0] : "";
+        const duration = durationMap[videoId] || 0;
+
+        return {
+          youtubeId: videoId,
+          title: item.snippet.title || "",
+          date: publishedDate,
+          thumbnailUrl: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          description: item.snippet.description || "",
+          link: `https://www.youtube.com/watch?v=${videoId}`,
+          duration: duration,
+          slug: item.snippet.title
+            ?.toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "") || `episode-${videoId}`,
+        };
+      })
+      .filter((video: any) => {
+        // Filter out shorts: videos under 60 seconds are typically shorts
+        return video.duration >= 60;
+      });
   } catch (error) {
     console.error("Error fetching with YouTube API:", error);
     return null;
@@ -91,18 +154,27 @@ export async function GET(request: Request) {
     }
 
     // Try YouTube Data API first if API key is available (gets all videos)
-    const apiKey = process.env.YOUTUBE_API_KEY;
+    // Check both YOUTUBE_API_KEY and NEXT_PUBLIC_YOUTUBE_API_KEY for compatibility
+    const apiKey = process.env.YOUTUBE_API_KEY || process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
     let episodes: any[] = [];
 
     if (apiKey) {
-      const apiVideos = await fetchAllVideosWithAPI(channelId, apiKey);
-      if (apiVideos) {
-        // Filter out shorts (they're typically less than 60 seconds, but we'll check the URL pattern)
-        episodes = apiVideos.filter((ep) => {
-          // Regular videos have /watch?v= in the URL, shorts have /shorts/
-          return ep.link && !ep.link.includes('/shorts/');
-        });
+      console.log('Using YouTube Data API v3 to fetch all videos...');
+      try {
+        const apiVideos = await fetchAllVideosWithAPI(channelId, apiKey);
+        if (apiVideos && apiVideos.length > 0) {
+          console.log(`Fetched ${apiVideos.length} videos from YouTube API (already filtered by duration >= 60s)`);
+          episodes = apiVideos;
+          console.log(`Total regular videos (>= 60 seconds): ${episodes.length}`);
+        } else {
+          console.log('YouTube API returned no videos, falling back to RSS feed');
+        }
+      } catch (apiError) {
+        console.error('Error using YouTube API, falling back to RSS:', apiError);
       }
+    } else {
+      console.log('No YouTube API key found in env vars, using RSS feed (limited to 15 videos)');
+      console.log('Available env vars:', Object.keys(process.env).filter(k => k.includes('YOUTUBE')));
     }
 
     // Fallback to RSS feed if API key not available or API failed
