@@ -18,7 +18,7 @@ export default function Home() {
               <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="/episodes">
                 Episodes
               </a>
-              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#about">
+              <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="/about">
                 About
               </a>
               <a className="rounded-full px-3 py-2 hover:text-brand-secondary" href="#newsletter">
