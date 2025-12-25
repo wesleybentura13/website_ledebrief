@@ -121,8 +121,10 @@ async function fetchAllVideosWithAPI(channelId: string, apiKey?: string): Promis
         };
       })
       .filter((video: any) => {
-        // Filter out shorts: videos under 60 seconds are typically shorts
-        return video.duration >= 60;
+        // Filter: only keep videos that start with '#' followed by a number
+        // Pattern: # followed by digits (e.g., "#34-", "#1-", etc.)
+        const titleMatch = video.title.match(/^#\d+/);
+        return titleMatch !== null;
       });
   } catch (error) {
     console.error("Error fetching with YouTube API:", error);
