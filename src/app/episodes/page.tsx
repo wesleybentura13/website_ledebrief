@@ -51,7 +51,20 @@ export default function EpisodesPage() {
         const data = await response.json();
         
         if (data.episodes && data.episodes.length > 0) {
-          setEpisodes(data.episodes);
+          // Sort episodes by episode number (#1, #2, #3, etc.)
+          const sortedEpisodes = [...data.episodes].sort((a, b) => {
+            // Extract episode number from title (e.g., "#34-" -> 34)
+            const getEpisodeNumber = (title: string): number => {
+              const match = title.match(/^#(\d+)/);
+              return match ? parseInt(match[1], 10) : 0;
+            };
+            const numA = getEpisodeNumber(a.title);
+            const numB = getEpisodeNumber(b.title);
+            // Sort descending (newest first) or ascending (oldest first)?
+            // User wants #1, #2, #3... so ascending (oldest first)
+            return numA - numB;
+          });
+          setEpisodes(sortedEpisodes);
         } else if (data.error) {
           setError(data.error + (data.details ? `: ${data.details}` : ""));
         } else {
