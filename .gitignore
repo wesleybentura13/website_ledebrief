@@ -11,3 +11,5 @@ yarn-error.log*
 .vercel
 .idea
 .vscode
+data/*.json
+!data/.gitkeep
