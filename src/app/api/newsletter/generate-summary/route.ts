@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { sendNewsletterEmail } from "@/lib/email";
 
 interface NewsletterContent {
   episodeNumber: number;
@@ -15,12 +16,14 @@ interface NewsletterContent {
 /**
  * Generates a summary from a transcription using OpenAI
  * Usage: POST /api/newsletter/generate-summary
- * Body: { videoId: string, title: string, episodeNumber: number }
+ * Body: { videoId: string, title: string, episodeNumber: number, transcript?: string }
+ * 
+ * If transcript is provided, it will be used directly. Otherwise, the API will try to fetch it.
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { videoId, title, episodeNumber } = body;
+    const { videoId, title, episodeNumber, transcript: providedTranscript } = body;
 
     if (!videoId || !title || episodeNumber === undefined) {
       return NextResponse.json(
@@ -29,30 +32,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // First, fetch the transcript
-    // Try multiple methods to get the transcript
-    let transcript = "";
+    // Use provided transcript if available, otherwise fetch it
+    let transcript = providedTranscript || "";
     let transcriptError = "";
 
-    try {
-      const baseUrl = request.url.split("/api")[0];
-      const transcriptResponse = await fetch(
-        `${baseUrl}/api/newsletter/transcript?videoId=${videoId}`,
-        {
-          // Add timeout
-          signal: AbortSignal.timeout(30000), // 30 second timeout
-        }
-      );
-      const transcriptData = await transcriptResponse.json();
+    // If no transcript provided, try to fetch it
+    if (!transcript || transcript.trim().length === 0) {
+      try {
+        const baseUrl = request.url.split("/api")[0];
+        const transcriptResponse = await fetch(
+          `${baseUrl}/api/newsletter/transcript?videoId=${videoId}`,
+          {
+            // Add timeout
+            signal: AbortSignal.timeout(30000), // 30 second timeout
+          }
+        );
+        const transcriptData = await transcriptResponse.json();
 
-      if (transcriptData.transcript) {
-        transcript = transcriptData.transcript;
-      } else {
-        transcriptError = transcriptData.error || "No transcript available";
+        if (transcriptData.transcript) {
+          transcript = transcriptData.transcript;
+        } else {
+          transcriptError = transcriptData.error || "No transcript available";
+        }
+      } catch (error) {
+        transcriptError = error instanceof Error ? error.message : String(error);
+        console.error("Error fetching transcript:", error);
       }
-    } catch (error) {
-      transcriptError = error instanceof Error ? error.message : String(error);
-      console.error("Error fetching transcript:", error);
     }
 
     if (!transcript || transcript.trim().length === 0) {
@@ -60,8 +65,8 @@ export async function POST(request: Request) {
         {
           error: "Could not fetch transcript for this video",
           details: transcriptError,
-          note: "Please ensure the video has captions enabled in YouTube Studio. You can enable auto-generated captions.",
-          suggestion: "Go to YouTube Studio > Videos > Select video > Subtitles > Add language > Auto-generate",
+          note: "You can provide the transcript manually by including it in the request body: { ..., transcript: 'your transcript text here' }",
+          suggestion: "Either ensure the video has captions enabled in YouTube Studio, or download the transcript manually and include it in the API request.",
         },
         { status: 400 }
       );
@@ -145,11 +150,25 @@ export async function POST(request: Request) {
 
     fs.writeFileSync(contentPath, JSON.stringify(newsletterContent, null, 2));
 
+    // Send newsletter emails to all subscribers
+    let emailResult = { sent: 0, failed: 0 };
+    try {
+      emailResult = await sendNewsletterEmail(newContent);
+      console.log(`[newsletter] Emails sent: ${emailResult.sent}, failed: ${emailResult.failed}`);
+    } catch (error) {
+      console.error("[newsletter] Error sending emails:", error);
+      // Don't fail the whole request if email sending fails
+    }
+
     return NextResponse.json({
       success: true,
       episodeNumber,
       summary,
       message: "Summary generated and saved successfully",
+      emails: {
+        sent: emailResult.sent,
+        failed: emailResult.failed,
+      },
     });
   } catch (error) {
     console.error("Error generating summary:", error);

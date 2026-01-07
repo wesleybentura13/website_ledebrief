@@ -41,3 +41,4 @@ Pour vérifier si les sous-titres sont disponibles sur une vidéo:
 
 Si la transcription apparaît, les sous-titres sont disponibles et devraient fonctionner avec notre système.
 
+

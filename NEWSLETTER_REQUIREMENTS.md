@@ -32,7 +32,7 @@
 
 **Cost**: ~$0.15 per 1M tokens. Summarizing a podcast transcript (~5000 words) costs approximately $0.01-0.02.
 
-### 2. **Email Service** (Optional - for sending emails)
+### 2. **Email Service** (Required for sending newsletters)
 
 Recommended: **Resend** (free tier: 3,000 emails/month)
 
@@ -42,7 +42,11 @@ Recommended: **Resend** (free tier: 3,000 emails/month)
 4. Add to `.env.local`:
    ```
    RESEND_API_KEY=re_your_api_key_here
+   RESEND_FROM_EMAIL=noreply@yourdomain.com
+   RESEND_FROM_NAME=Le Débrief Podcast
    ```
+
+**Note**: You'll need to verify your domain in Resend to send emails. For testing, you can use `onboarding@resend.dev` as the from email.
 
 ## 📋 How to Use
 
@@ -73,13 +77,24 @@ Users can subscribe via:
 - Homepage form (to be added)
 - Newsletter page form (to be added)
 
+## ✅ Email Newsletter System
+
+When you generate a summary for a new episode, the system **automatically sends emails** to all subscribers with:
+- Personalized greeting (using subscriber's first name)
+- Episode title and summary
+- YouTube link
+- Full transcript (first 2000 characters, with link to full transcript)
+- Professional HTML email template
+
+**Email sending happens automatically** when you call `/api/newsletter/generate-summary` - no additional steps needed!
+
 ## 🎯 Next Steps
 
 1. **Add subscription form to homepage** - Form to collect emails
 2. **Add subscription form to newsletter page** - Another entry point
 3. **Implement subscriber authentication** - Check if user is subscribed
 4. **Auto-generate summaries** - Create a script/cron job to auto-generate summaries for new episodes
-5. **Email sending** - Send newsletter emails when new summaries are generated
+5. ~~**Email sending**~~ ✅ **DONE** - Emails are sent automatically when summaries are generated
 6. **Admin dashboard** - Interface to manage summaries and subscribers
 
 ## 📝 Notes
@@ -107,4 +122,5 @@ Users can subscribe via:
    ```bash
    curl "http://localhost:3000/api/newsletter/content"
    ```
+
 
