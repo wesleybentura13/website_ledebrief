@@ -13,3 +13,5 @@ yarn-error.log*
 .vscode
 data/*.json
 !data/.gitkeep
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor/rules/snyk_rules.mdc
