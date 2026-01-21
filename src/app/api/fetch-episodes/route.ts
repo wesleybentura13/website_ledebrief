@@ -200,8 +200,8 @@ export async function GET(request: Request) {
     }
 
     // Try YouTube Data API first if API key is available (gets all videos)
-    // Check both YOUTUBE_API_KEY and NEXT_PUBLIC_YOUTUBE_API_KEY for compatibility
-    const apiKey = process.env.YOUTUBE_API_KEY || process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
+    // Only use server-side YOUTUBE_API_KEY (never expose API keys with NEXT_PUBLIC_ prefix)
+    const apiKey = process.env.YOUTUBE_API_KEY;
     let episodes: any[] = [];
 
     if (apiKey) {

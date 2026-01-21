@@ -10,3 +10,6 @@
 [build.environment]
   # Optional: Disable Turbopack if you still have issues (uncomment to use Webpack instead)
   # NEXT_DISABLE_TURBOPACK = "1"
+  # Whitelist NEXT_PUBLIC_YOUTUBE_CHANNEL_ID - it's intentionally public (safe for client-side)
+  # Other secrets (OPENAI_API_KEY, RESEND_API_KEY, YOUTUBE_API_KEY) are server-only and should NOT be exposed
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_YOUTUBE_CHANNEL_ID"
