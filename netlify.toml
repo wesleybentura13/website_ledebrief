@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
-  # Do NOT set publish directory - let @netlify/plugin-nextjs handle it automatically
-  # publish = ".next"  # ❌ DO NOT SET THIS - causes Turbopack errors
+  # Set publish directory to .netlify/output (created by @netlify/plugin-nextjs during build)
+  publish = ".netlify/output"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
