@@ -34,9 +34,9 @@ YouTube RSS feeds are limited to the **15 most recent videos** only. To display 
    - Open your `.env.local` file
    - Add this line:
      ```
-     YOUTUBE_API_KEY=YOUR_API_KEY_HERE
+     YOUTUBE_API_KEY=your-youtube-api-key-here
      ```
-   - Replace `YOUR_API_KEY_HERE` with the API key you copied
+   - Replace `your-youtube-api-key-here` with the API key you copied
 
 7. **Restart Your Dev Server**
    - Stop the server (Ctrl+C)

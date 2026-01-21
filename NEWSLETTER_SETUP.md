@@ -19,7 +19,7 @@ The newsletter system automatically:
 4. Create a new API key
 5. Add to `.env.local`:
    ```
-   OPENAI_API_KEY=your_api_key_here
+   OPENAI_API_KEY=your-openai-api-key-here
    ```
 
 ### 2. Email Service (Resend - Recommended)
@@ -30,7 +30,7 @@ The newsletter system automatically:
 4. Get your API key
 5. Add to `.env.local`:
    ```
-   RESEND_API_KEY=your_resend_api_key_here
+   RESEND_API_KEY=your-resend-api-key-here
    ```
 
 ### 3. Database/Storage

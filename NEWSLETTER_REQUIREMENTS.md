@@ -27,7 +27,7 @@
 4. Create a new API key
 5. Add to `.env.local`:
    ```
-   OPENAI_API_KEY=sk-your-api-key-here
+   OPENAI_API_KEY=your-openai-api-key-here
    ```
 
 **Cost**: ~$0.15 per 1M tokens. Summarizing a podcast transcript (~5000 words) costs approximately $0.01-0.02.
@@ -41,7 +41,7 @@ Recommended: **Resend** (free tier: 3,000 emails/month)
 3. Get API key
 4. Add to `.env.local`:
    ```
-   RESEND_API_KEY=re_your_api_key_here
+   RESEND_API_KEY=your-resend-api-key-here
    RESEND_FROM_EMAIL=noreply@yourdomain.com
    RESEND_FROM_NAME=Le Débrief Podcast
    ```
