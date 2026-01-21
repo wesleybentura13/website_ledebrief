@@ -234,43 +234,51 @@ export async function GET(request: Request) {
         return item.link && !item.link.includes('/shorts/');
       });
 
-      episodes = regularVideos.map((item, index) => {
-      // Extract video ID from YouTube video URL (only regular videos now)
-      let videoId = "";
-      if (item.link) {
-        // Try regular video format: ?v=VIDEO_ID
-        const regularMatch = item.link.match(/[?&]v=([^&]+)/);
-        if (regularMatch) {
-          videoId = regularMatch[1];
-        } else {
-          // Try embed format: /embed/VIDEO_ID
-          const embedMatch = item.link.match(/\/embed\/([^/?]+)/);
-          if (embedMatch) {
-            videoId = embedMatch[1];
+      episodes = regularVideos
+        .map((item, index) => {
+          // Extract video ID from YouTube video URL (only regular videos now)
+          let videoId = "";
+          if (item.link) {
+            // Try regular video format: ?v=VIDEO_ID
+            const regularMatch = item.link.match(/[?&]v=([^&]+)/);
+            if (regularMatch) {
+              videoId = regularMatch[1];
+            } else {
+              // Try embed format: /embed/VIDEO_ID
+              const embedMatch = item.link.match(/\/embed\/([^/?]+)/);
+              if (embedMatch) {
+                videoId = embedMatch[1];
+              }
+            }
           }
-        }
-      }
 
-      // Extract date
-      const publishedDate = item.pubDate ? new Date(item.pubDate).toISOString().split('T')[0] : "";
+          // Extract date
+          const publishedDate = item.pubDate ? new Date(item.pubDate).toISOString().split('T')[0] : "";
 
-      const rawTitle = item.title || "";
-      const decodedTitle = decodeHtmlEntities(rawTitle);
+          const rawTitle = item.title || "";
+          const decodedTitle = decodeHtmlEntities(rawTitle);
 
-      return {
-        youtubeId: videoId,
-        title: decodedTitle,
-        date: publishedDate,
-        thumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "",
-        description: decodeHtmlEntities(item.contentSnippet || item.content || ""),
-        link: item.link || "",
-        // Generate a slug from title
-        slug: decodedTitle
-          ?.toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "") || `episode-${index + 1}`,
-      };
-      });
+          return {
+            youtubeId: videoId,
+            title: decodedTitle,
+            date: publishedDate,
+            thumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "",
+            description: decodeHtmlEntities(item.contentSnippet || item.content || ""),
+            link: item.link || "",
+            // Generate a slug from title
+            slug: decodedTitle
+              ?.toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "") || `episode-${index + 1}`,
+          };
+        })
+        .filter((video: any) => {
+          // Filter: only keep videos that start with '#' followed by a number
+          // Pattern: # followed by digits (e.g., "#34-", "#1-", etc.)
+          // This matches the same filter used in the API method
+          const titleMatch = video.title.match(/^#\d+/);
+          return titleMatch !== null;
+        });
     }
 
     return NextResponse.json({ 
