@@ -13,3 +13,5 @@
   # Whitelist NEXT_PUBLIC_YOUTUBE_CHANNEL_ID - it's intentionally public (safe for client-side)
   # Other secrets (OPENAI_API_KEY, RESEND_API_KEY, YOUTUBE_API_KEY) are server-only and should NOT be exposed
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_YOUTUBE_CHANNEL_ID"
+  # Exclude server-side API routes from scanning (they contain env var names in error messages, not actual secrets)
+  SECRETS_SCAN_OMIT_PATHS = ".next/server/app/api/**|src/app/api/**"
