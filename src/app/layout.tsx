@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Le Debrief Podcast",
   description:
     "Le Debrief Podcast avec Wesley & Sacha Bentura : nouveaux épisodes, transcriptions et newsletter.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
