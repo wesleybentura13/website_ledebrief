@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  # Do NOT set publish directory - let @netlify/plugin-nextjs handle it automatically
+  # publish = ".next"  # ❌ DO NOT SET THIS - causes Turbopack errors
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  # Optional: Disable Turbopack if you still have issues (uncomment to use Webpack instead)
+  # NEXT_DISABLE_TURBOPACK = "1"
