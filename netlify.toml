@@ -1,7 +1,8 @@
 [build]
   command = "npm run build"
-  # Do NOT set publish directory - let @netlify/plugin-nextjs handle it automatically
-  # The plugin will create and manage the publish directory during the build
+  # Set publish directory to .next (Next.js build output)
+  # The @netlify/plugin-nextjs will process this and create the final deployment
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
