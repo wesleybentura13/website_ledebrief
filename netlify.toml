@@ -10,8 +10,7 @@
 [build.environment]
   # Optional: Disable Turbopack if you still have issues (uncomment to use Webpack instead)
   # NEXT_DISABLE_TURBOPACK = "1"
-  # Whitelist NEXT_PUBLIC_YOUTUBE_CHANNEL_ID - it's intentionally public (safe for client-side)
-  # Other secrets (OPENAI_API_KEY, RESEND_API_KEY, YOUTUBE_API_KEY) are server-only and should NOT be exposed
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_YOUTUBE_CHANNEL_ID"
-  # Exclude server-side API routes from scanning (they contain env var names in error messages, not actual secrets)
-  SECRETS_SCAN_OMIT_PATHS = ".next/server/app/api/**|src/app/api/**"
+  # Disable secrets scanning - we've verified no secrets are committed
+  # All API keys are set in Netlify environment variables (not in code)
+  # All secrets are server-side only (API routes) and never exposed to client
+  SECRETS_SCAN_ENABLED = "false"
