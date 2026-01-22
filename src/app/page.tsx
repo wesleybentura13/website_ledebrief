@@ -190,14 +190,14 @@ export default function Home() {
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition-all hover:bg-white/10 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#00e0d1]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <p className="relative text-lg italic text-white/90 md:text-xl">
-                &ldquo;Nous vous proposons nos points de vue uniques que ce soit dans le sport, le cinéma ou la finance mais aussi bien d&apos;autres...&rdquo;
+                &ldquo;Nous décortiquons l&apos;actualité avec nos perspectives uniques sur le sport, le cinéma, la finance et bien d&apos;autres sujets. Chaque épisode, c&apos;est notre vision authentique et sans filtre.&rdquo;
               </p>
               <p className="relative mt-4 text-sm font-semibold text-[#00e0d1]">Wesley Bentura</p>
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition-all hover:bg-white/10 hover:scale-[1.02]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#0c79c5]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <p className="relative text-lg italic text-white/90 md:text-xl">
-                &ldquo;Le debrief, c&apos;est le podcast qui traite de tous les sujets à notre sauce&rdquo;
+                &ldquo;Le Débrief, c&apos;est notre façon de traiter tous les sujets qui nous passionnent. Pas de formatage, pas de langue de bois : juste nos vraies opinions et nos débats authentiques.&rdquo;
               </p>
               <p className="relative mt-4 text-sm font-semibold text-[#0c79c5]">Sacha Bentura</p>
             </div>
@@ -481,6 +481,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 
