@@ -45,6 +45,7 @@ export default function Home() {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("hero");
+  const [episodesToShow, setEpisodesToShow] = useState(6);
 
   useEffect(() => {
     const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
@@ -67,7 +68,7 @@ export default function Home() {
             };
             return getEpisodeNumber(b.title) - getEpisodeNumber(a.title);
           });
-          setEpisodes(sortedEpisodes.slice(0, 6)); // Show latest 6
+          setEpisodes(sortedEpisodes); // Store all episodes
         }
       } catch (err) {
         console.error("Failed to fetch episodes:", err);
@@ -377,62 +378,74 @@ export default function Home() {
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#00e0d1] border-t-transparent" />
             </div>
           ) : episodes.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {episodes.map((episode, index) => (
-                <a
-                  key={episode.slug}
-                  href={episode.link || `https://www.youtube.com/watch?v=${episode.youtubeId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/30"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="relative aspect-video overflow-hidden">
-                    <img
-                      src={episode.thumbnailUrl}
-                      alt={episode.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FF0000] shadow-lg">
-                        <svg className="ml-1 h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+            <>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {episodes.slice(0, episodesToShow).map((episode, index) => (
+                  <a
+                    key={episode.slug}
+                    href={episode.link || `https://www.youtube.com/watch?v=${episode.youtubeId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/30"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="relative aspect-video overflow-hidden">
+                      <img
+                        src={episode.thumbnailUrl}
+                        alt={episode.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FF0000] shadow-lg">
+                          <svg className="ml-1 h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="mb-2 line-clamp-2 text-lg font-bold text-white group-hover:text-[#00e0d1] transition-colors">
-                      {episode.title}
-                    </h3>
-                    <div className="flex items-center justify-between text-sm text-white/60">
-                      {episode.date && <span>{formatDate(episode.date)}</span>}
-                      {episode.viewCount !== undefined && (
-                        <span>{formatViewCount(episode.viewCount)} vues</span>
-                      )}
+                    <div className="p-6">
+                      <h3 className="mb-2 line-clamp-2 text-lg font-bold text-white group-hover:text-[#00e0d1] transition-colors">
+                        {episode.title}
+                      </h3>
+                      <div className="flex items-center justify-between text-sm text-white/60">
+                        {episode.date && <span>{formatDate(episode.date)}</span>}
+                        {episode.viewCount !== undefined && (
+                          <span>{formatViewCount(episode.viewCount)} vues</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+                  </a>
+                ))}
+              </div>
+
+              {episodes.length > episodesToShow && (
+                <div className="mt-12 text-center">
+                  <button
+                    onClick={() => setEpisodesToShow(episodes.length)}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-white transition-all hover:border-[#00e0d1]/50 hover:bg-[#00e0d1]/10 hover:scale-105"
+                  >
+                    Voir tous les épisodes ({episodes.length - episodesToShow} de plus)
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {episodesToShow >= episodes.length && episodes.length > 6 && (
+                <div className="mt-8 text-center">
+                  <p className="text-white/60">
+                    Affichage de tous les {episodes.length} épisodes
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center backdrop-blur-sm">
               <p className="text-lg text-white/80">Aucun épisode disponible pour le moment.</p>
             </div>
           )}
-
-          <div className="mt-12 text-center">
-            <a
-              href="/episodes"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-white transition-all hover:border-[#00e0d1]/50 hover:bg-[#00e0d1]/10"
-            >
-              Voir tous les épisodes
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
         </div>
       </section>
 
@@ -468,4 +481,7 @@ export default function Home() {
     </div>
   );
 }
+
+
+
 
