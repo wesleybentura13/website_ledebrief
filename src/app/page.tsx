@@ -174,11 +174,38 @@ export default function Home() {
             </span>
           </div>
           
-          <h1 className="mb-6 text-6xl font-bold leading-tight md:text-8xl lg:text-9xl">
-            <span className="block bg-gradient-to-r from-white via-[#00e0d1] to-white bg-clip-text text-transparent">
-              le débrief
-            </span>
-          </h1>
+          <div className="mb-6 relative flex items-center justify-center">
+            {/* SVG Logo with gradient overlay to match brand colors */}
+            <div className="relative inline-block w-full max-w-4xl">
+              <Image
+                src="/logo2.svg"
+                alt="le débrief"
+                width={851}
+                height={315}
+                className="h-auto w-full object-contain"
+                priority
+                style={{
+                  filter: 'drop-shadow(0 0 30px rgba(0, 224, 209, 0.4))',
+                }}
+              />
+              {/* Gradient overlay matching the text gradient - applied via CSS mask */}
+              <div 
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to right, rgba(255,255,255,0.4) 0%, rgba(0,224,209,0.6) 50%, rgba(255,255,255,0.4) 100%)',
+                  mixBlendMode: 'overlay',
+                  WebkitMaskImage: 'url(/logo2.svg)',
+                  maskImage: 'url(/logo2.svg)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }}
+              />
+            </div>
+          </div>
           
           <p className="mx-auto mb-12 max-w-2xl text-xl text-white/80 md:text-2xl">
             Le podcast qui traite de tous les sujets à notre sauce. 
