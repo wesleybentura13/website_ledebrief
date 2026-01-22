@@ -216,7 +216,7 @@ export default function Home() {
           <div className="mb-12 flex justify-center">
             <div className="relative group overflow-hidden rounded-3xl border border-white/20 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/50 hover:shadow-[0_0_40px_rgba(0,224,209,0.3)]">
               <Image
-                src="/images/77.png"
+                src="/logo.png"
                 alt="Wesley & Sacha Bentura - Le Débrief Podcast"
                 width={1200}
                 height={675}
