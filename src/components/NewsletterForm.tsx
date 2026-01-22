@@ -45,7 +45,7 @@ export default function NewsletterForm() {
     <form onSubmit={handleSubmit} className="w-full max-w-2xl">
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="firstName" className="mb-2 block text-sm font-semibold text-foreground">
+          <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-white/80">
             Prénom (optionnel)
           </label>
           <input
@@ -53,13 +53,13 @@ export default function NewsletterForm() {
             id="firstName"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-foreground transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 backdrop-blur-sm transition-all focus:border-[#00e0d1] focus:outline-none focus:ring-2 focus:ring-[#00e0d1]/30"
             placeholder="Votre prénom"
           />
         </div>
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-semibold text-foreground">
-            Email <span className="text-red-500">*</span>
+          <label htmlFor="email" className="mb-2 block text-sm font-medium text-white/80">
+            Email <span className="text-[#00e0d1]">*</span>
           </label>
           <input
             type="email"
@@ -67,7 +67,7 @@ export default function NewsletterForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-foreground transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 backdrop-blur-sm transition-all focus:border-[#00e0d1] focus:outline-none focus:ring-2 focus:ring-[#00e0d1]/30"
             placeholder="votre@email.com"
           />
         </div>
@@ -76,17 +76,17 @@ export default function NewsletterForm() {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="rounded-full bg-brand px-8 py-3 text-base font-semibold text-white shadow-md transition hover:bg-brand-secondary disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full bg-gradient-to-r from-[#00e0d1] to-[#0c79c5] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(0,224,209,0.5)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === "loading" ? "Inscription..." : "S'abonner à la newsletter"}
         </button>
       </div>
       {message && (
         <div
-          className={`mt-6 rounded-lg px-4 py-3 text-sm text-center ${
+          className={`mt-6 rounded-xl px-4 py-3 text-sm text-center backdrop-blur-sm ${
             status === "success"
-              ? "bg-green-50 text-green-800"
-              : "bg-red-50 text-red-800"
+              ? "bg-[#00e0d1]/20 text-[#00e0d1] border border-[#00e0d1]/30"
+              : "bg-red-500/20 text-red-400 border border-red-500/30"
           }`}
         >
           {message}

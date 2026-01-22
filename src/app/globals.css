@@ -1,14 +1,16 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-  --background: #f4f8fd;
-  --foreground: #0a1b2d;
-  --brand-primary: #0f6cc3;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --brand-primary: #0c79c5;
   --brand-secondary: #2ca1ff;
   --brand-accent: #00e0d1;
   --brand-ink: #0b1b2b;
-  --card: #ffffff;
-  --muted: #5b6a86;
+  --card: rgba(255, 255, 255, 0.05);
+  --muted: rgba(255, 255, 255, 0.6);
 }
 
 @theme inline {
@@ -19,19 +21,93 @@
   --color-brand-accent: var(--brand-accent);
   --color-card: var(--card);
   --color-muted: var(--muted);
-  --font-sans: var(--font-geist-sans);
+  --font-display: 'Playfair Display', serif;
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --shadow-soft: 0 14px 45px rgba(16, 24, 40, 0.12);
+  --shadow-soft: 0 14px 45px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px rgba(0, 224, 209, 0.3);
+}
+
+* {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: radial-gradient(circle at 20% 20%, #e9f2ff 0, transparent 30%),
-    radial-gradient(circle at 80% 0%, #dff7f4 0, transparent 35%),
-    var(--background);
+  background: #0a0a0a;
   color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Smooth scroll animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 224, 209, 0.3);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 224, 209, 0.5);
 }
 
 ::selection {
-  background: rgba(16, 224, 209, 0.25);
-  color: var(--brand-ink);
+  background: rgba(0, 224, 209, 0.3);
+  color: #ffffff;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #00e0d1 50%, #0c79c5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
