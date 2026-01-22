@@ -212,22 +212,6 @@ export default function Home() {
             Sport, cinéma, finance et bien plus encore.
           </p>
 
-          {/* Podcast Cover Image */}
-          <div className="mb-12 flex justify-center">
-            <div className="relative group overflow-hidden rounded-3xl border border-white/20 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/50 hover:shadow-[0_0_40px_rgba(0,224,209,0.3)]">
-              <Image
-                src="/logo.png"
-                alt="Wesley & Sacha Bentura - Le Débrief Podcast"
-                width={1200}
-                height={675}
-                className="h-auto w-full max-w-2xl object-contain"
-                priority
-              />
-              {/* Subtle overlay to match dark theme */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </div>
-
           {/* Host Quotes */}
           <div className="mx-auto mb-16 grid max-w-4xl gap-6 md:grid-cols-2">
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition-all hover:bg-white/10 hover:scale-[1.02]">
@@ -311,6 +295,22 @@ export default function Home() {
               À propos
             </span>
             <h2 className="text-5xl font-bold md:text-7xl">Qui sommes-nous ?</h2>
+          </div>
+
+          {/* Podcast Cover Image */}
+          <div className="mb-16 flex justify-center">
+            <div className="relative group overflow-hidden rounded-3xl border border-white/20 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/50 hover:shadow-[0_0_40px_rgba(0,224,209,0.3)]">
+              <Image
+                src="/logo.png"
+                alt="Wesley & Sacha Bentura - Le Débrief Podcast"
+                width={1200}
+                height={675}
+                className="h-auto w-full max-w-3xl object-contain"
+                priority
+              />
+              {/* Subtle overlay to match dark theme */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
           </div>
 
           <div className="mb-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm md:p-12">
