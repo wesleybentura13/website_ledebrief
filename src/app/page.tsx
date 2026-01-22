@@ -174,27 +174,11 @@ export default function Home() {
             </span>
           </div>
           
-          <div className="mb-6 relative">
-            <Image
-              src="/images/77.png"
-              alt="le débrief"
-              width={800}
-              height={200}
-              className="h-auto w-full max-w-4xl mx-auto object-contain"
-              priority
-              style={{
-                filter: 'drop-shadow(0 0 20px rgba(0, 224, 209, 0.3))',
-              }}
-            />
-            {/* Gradient overlay to match brand colors */}
-            <div 
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: 'linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(0,224,209,0.2) 50%, rgba(255,255,255,0.1) 100%)',
-                mixBlendMode: 'overlay',
-              }}
-            />
-          </div>
+          <h1 className="mb-6 text-6xl font-bold leading-tight md:text-8xl lg:text-9xl">
+            <span className="block bg-gradient-to-r from-white via-[#00e0d1] to-white bg-clip-text text-transparent">
+              le débrief
+            </span>
+          </h1>
           
           <p className="mx-auto mb-12 max-w-2xl text-xl text-white/80 md:text-2xl">
             Le podcast qui traite de tous les sujets à notre sauce. 
