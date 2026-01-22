@@ -101,36 +101,6 @@ body {
   background-clip: text;
 }
 
-/* Custom 3-dot i styling */
-.custom-i {
-  position: relative;
-  display: inline-block;
-}
-
-.custom-i::after {
-  content: '';
-  position: absolute;
-  top: -0.3em;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.15em;
-  width: 0.6em;
-  height: 0.6em;
-}
-
-.custom-i::before {
-  content: '●●●';
-  position: absolute;
-  top: -0.4em;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.3em;
-  line-height: 1;
-  color: inherit;
-  letter-spacing: 0.05em;
-}
-
 /* Hover effects */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;

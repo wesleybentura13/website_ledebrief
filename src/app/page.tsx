@@ -176,18 +176,7 @@ export default function Home() {
           
           <h1 className="mb-6 text-6xl font-bold leading-tight md:text-8xl lg:text-9xl">
             <span className="block bg-gradient-to-r from-white via-[#00e0d1] to-white bg-clip-text text-transparent">
-              Le Débr
-              <span className="relative inline-block">
-                <span className="relative">
-                  i
-                  <span className="absolute -top-[0.15em] left-1/2 -translate-x-1/2 flex gap-[0.08em] pointer-events-none">
-                    <span className="h-[0.12em] w-[0.12em] rounded-full bg-gradient-to-r from-white via-[#00e0d1] to-white"></span>
-                    <span className="h-[0.12em] w-[0.12em] rounded-full bg-gradient-to-r from-white via-[#00e0d1] to-white"></span>
-                    <span className="h-[0.12em] w-[0.12em] rounded-full bg-gradient-to-r from-white via-[#00e0d1] to-white"></span>
-                  </span>
-                </span>
-              </span>
-              ef
+              le débrief
             </span>
           </h1>
           
