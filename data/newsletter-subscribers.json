@@ -13,5 +13,10 @@
     "email": "wesleybentura+test@gmail.com",
     "firstName": "Test Wesley",
     "subscribedAt": "2026-01-25T11:34:42.764Z"
+  },
+  {
+    "email": "test_inscription@example.com",
+    "firstName": "Test",
+    "subscribedAt": "2026-01-25T12:00:13.051Z"
   }
 ]
