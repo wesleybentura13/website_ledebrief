@@ -115,6 +115,8 @@ async function addContactToBrevo(
           "api-key": apiKey,
           "Content-Length": Buffer.byteLength(payload),
         },
+        // Fix SSL certificate issue in local development
+        rejectUnauthorized: process.env.NODE_ENV === "production",
       };
 
       const req = https.request(options, (res: any) => {
@@ -202,6 +204,8 @@ async function sendWelcomeEmail(email: string, firstName?: string) {
           "api-key": BREVO_API_KEY,
           "Content-Length": Buffer.byteLength(payload),
         },
+        // Fix SSL certificate issue in local development
+        rejectUnauthorized: process.env.NODE_ENV === "production",
       };
 
       const req = https.request(options, (res: any) => {
@@ -279,6 +283,8 @@ async function sendAdminNotification(email: string, firstName?: string) {
           "api-key": BREVO_API_KEY,
           "Content-Length": Buffer.byteLength(payload),
         },
+        // Fix SSL certificate issue in local development
+        rejectUnauthorized: process.env.NODE_ENV === "production",
       };
 
       const req = https.request(options, (res: any) => {
