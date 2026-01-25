@@ -14,13 +14,18 @@ export default function NewsletterForm() {
     setMessage("");
 
     try {
-      // Submit to Netlify Forms (using native form submission)
+      // Encode form data for Netlify Forms
       const formData = new FormData(e.currentTarget);
+      const formBody = new URLSearchParams();
+      
+      formData.forEach((value, key) => {
+        formBody.append(key, value.toString());
+      });
       
       const response = await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData as any).toString(),
+        body: formBody.toString(),
       });
 
       if (response.ok) {
@@ -29,6 +34,17 @@ export default function NewsletterForm() {
         setEmail("");
         setFirstName("");
         localStorage.setItem("newsletter_subscriber", "true");
+        
+        // Also trigger email notifications via API
+        try {
+          await fetch("/api/newsletter/send-notification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, firstName }),
+          });
+        } catch (err) {
+          console.log("Email notification skipped");
+        }
       } else {
         setStatus("error");
         setMessage("Une erreur est survenue. Veuillez réessayer.");

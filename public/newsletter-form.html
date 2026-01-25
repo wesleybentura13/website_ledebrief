@@ -6,9 +6,10 @@
 <body>
   <!-- This file helps Netlify detect the form at build time -->
   <!-- The actual form is rendered by React in NewsletterForm.tsx -->
-  <form name="newsletter" netlify netlify-honeypot="bot-field" hidden>
+  <form name="newsletter" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="newsletter" />
     <input type="text" name="firstName" />
-    <input type="email" name="email" />
+    <input type="email" name="email" required />
     <input type="text" name="bot-field" />
   </form>
 </body>
