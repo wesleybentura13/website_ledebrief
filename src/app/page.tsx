@@ -150,7 +150,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => scrollToSection("newsletter")}
-              className={`hidden sm:block text-xs sm:text-sm font-medium transition-colors ${
+              className={`text-xs sm:text-sm font-medium transition-colors ${
                 activeSection === "newsletter" ? "text-[#00e0d1]" : "text-white/70 hover:text-white"
               }`}
             >
