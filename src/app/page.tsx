@@ -161,14 +161,14 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-20">
         {/* Animated gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#0a0a0a]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,224,209,0.15),transparent_50%)] animate-pulse" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(12,121,197,0.1),transparent_50%)]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-32 text-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-32 text-center">
           <div className="mb-8 inline-block">
             <span className="rounded-full border border-[#00e0d1]/30 bg-[#00e0d1]/10 px-6 py-2 text-sm font-medium text-[#00e0d1] backdrop-blur-sm">
               Podcast hebdomadaire
