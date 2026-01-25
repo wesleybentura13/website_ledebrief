@@ -111,21 +111,22 @@ export default function Home() {
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased">
       {/* Fixed Navigation */}
       <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="transition-opacity hover:opacity-80">
             <Image
               src="/logo-banner.svg"
               alt="Le Debrief Podcast"
-              width={200}
-              height={50}
-              className="h-10 w-auto object-contain brightness-0 invert"
+              width={160}
+              height={40}
+              className="h-8 w-auto object-contain brightness-0 invert sm:h-10"
               priority
             />
           </Link>
-          <div className="hidden items-center gap-8 md:flex">
+          {/* Mobile & Desktop Navigation */}
+          <div className="flex items-center gap-4 sm:gap-8">
             <button
               onClick={() => scrollToSection("hero")}
-              className={`text-sm font-medium transition-colors ${
+              className={`text-xs sm:text-sm font-medium transition-colors ${
                 activeSection === "hero" ? "text-[#00e0d1]" : "text-white/70 hover:text-white"
               }`}
             >
@@ -133,7 +134,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => scrollToSection("about")}
-              className={`text-sm font-medium transition-colors ${
+              className={`text-xs sm:text-sm font-medium transition-colors ${
                 activeSection === "about" ? "text-[#00e0d1]" : "text-white/70 hover:text-white"
               }`}
             >
@@ -141,7 +142,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => scrollToSection("episodes")}
-              className={`text-sm font-medium transition-colors ${
+              className={`text-xs sm:text-sm font-medium transition-colors ${
                 activeSection === "episodes" ? "text-[#00e0d1]" : "text-white/70 hover:text-white"
               }`}
             >
@@ -149,7 +150,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => scrollToSection("newsletter")}
-              className={`text-sm font-medium transition-colors ${
+              className={`hidden sm:block text-xs sm:text-sm font-medium transition-colors ${
                 activeSection === "newsletter" ? "text-[#00e0d1]" : "text-white/70 hover:text-white"
               }`}
             >
@@ -231,8 +232,9 @@ export default function Home() {
           </div>
 
           {/* Social Links */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <span className="text-sm text-white/60">Écouter sur :</span>
+            <div className="flex items-center justify-center gap-4">
             <a
               href="https://www.youtube.com/@ledebrief_podcast"
               target="_blank"
@@ -277,6 +279,7 @@ export default function Home() {
                 <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
               </svg>
             </a>
+            </div>
           </div>
         </div>
 
@@ -325,11 +328,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             {/* Wesley */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#00e0d1]/10 to-white/5 p-8 backdrop-blur-sm transition-all hover:border-[#00e0d1]/30 hover:scale-[1.02]">
-              <div className="relative mb-6 flex items-center gap-6">
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-[#00e0d1]/30">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#00e0d1]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#00e0d1]/30 hover:scale-[1.02]">
+              <div className="relative mb-6 flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-6 sm:text-left">
+                <div className="relative h-20 w-20 sm:h-24 sm:w-24 mb-4 sm:mb-0 overflow-hidden rounded-full border-2 border-[#00e0d1]/30 shrink-0">
                   <Image
                     src="/images/74.png"
                     alt="Wesley Bentura"
@@ -338,36 +341,38 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Wesley Bentura</h3>
-                  <p className="text-[#00e0d1]">Ingénieur en technologie</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white">Wesley Bentura</h3>
+                  <p className="text-sm sm:text-base text-[#00e0d1]">Ingénieur en technologie</p>
                 </div>
               </div>
-              <p className="mb-4 leading-relaxed text-white/80">
+              <p className="mb-4 leading-relaxed text-sm sm:text-base text-white/80">
                 Originaire de Nice, Wesley est ingénieur dans une entreprise technologique. 
                 Passionné par l&apos;innovation et les nouvelles technologies, il apporte une 
                 perspective technique et analytique au podcast.
               </p>
-              <p className="mb-6 leading-relaxed text-white/80">
+              <p className="mb-6 leading-relaxed text-sm sm:text-base text-white/80">
                 Son parcours l&apos;a mené de la France à la Chine, où il a développé une 
                 expérience internationale enrichissante, avant de s&apos;installer en Israël.
               </p>
-              <a
-                href="https://www.linkedin.com/in/wesleybentura/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0077B5] transition-all hover:scale-110 hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
-                aria-label="LinkedIn de Wesley Bentura"
-              >
-                <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-              </a>
+              <div className="flex justify-center sm:justify-start">
+                <a
+                  href="https://www.linkedin.com/in/wesleybentura/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0077B5] transition-all hover:scale-110 hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
+                  aria-label="LinkedIn de Wesley Bentura"
+                >
+                  <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
 
             {/* Sacha */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0c79c5]/10 to-white/5 p-8 backdrop-blur-sm transition-all hover:border-[#0c79c5]/30 hover:scale-[1.02]">
-              <div className="relative mb-6 flex items-center gap-6">
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-[#0c79c5]/30">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0c79c5]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#0c79c5]/30 hover:scale-[1.02]">
+              <div className="relative mb-6 flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-6 sm:text-left">
+                <div className="relative h-20 w-20 sm:h-24 sm:w-24 mb-4 sm:mb-0 overflow-hidden rounded-full border-2 border-[#0c79c5]/30 shrink-0">
                   <Image
                     src="/images/75.png"
                     alt="Sacha Bentura"
@@ -376,30 +381,32 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Sacha Bentura</h3>
-                  <p className="text-[#0c79c5]">Professeur de mathématiques</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white">Sacha Bentura</h3>
+                  <p className="text-sm sm:text-base text-[#0c79c5]">Professeur de mathématiques</p>
                 </div>
               </div>
-              <p className="mb-4 leading-relaxed text-white/80">
+              <p className="mb-4 leading-relaxed text-sm sm:text-base text-white/80">
                 Originaire de Nice, Sacha est professeur de mathématiques. Sa passion pour 
                 l&apos;enseignement et sa capacité à expliquer des concepts complexes de manière 
                 accessible enrichissent nos conversations.
               </p>
-              <p className="mb-6 leading-relaxed text-white/80">
+              <p className="mb-6 leading-relaxed text-sm sm:text-base text-white/80">
                 Installé en Belgique, il apporte une perspective pédagogique et une approche 
                 méthodique à nos débats.
               </p>
-              <a
-                href="https://www.linkedin.com/in/sacha-bentura-47854421b/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0077B5] transition-all hover:scale-110 hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
-                aria-label="LinkedIn de Sacha Bentura"
-              >
-                <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-              </a>
+              <div className="flex justify-center sm:justify-start">
+                <a
+                  href="https://www.linkedin.com/in/sacha-bentura-47854421b/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0077B5] transition-all hover:scale-110 hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
+                  aria-label="LinkedIn de Sacha Bentura"
+                >
+                  <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
