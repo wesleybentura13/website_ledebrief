@@ -3,5 +3,15 @@
     "email": "wesleybentura@gmail.com",
     "firstName": "Wesley",
     "subscribedAt": "2025-12-25T13:04:26.826Z"
+  },
+  {
+    "email": "test_1769340862@example.com",
+    "firstName": "Test User",
+    "subscribedAt": "2026-01-25T11:34:22.574Z"
+  },
+  {
+    "email": "wesleybentura+test@gmail.com",
+    "firstName": "Test Wesley",
+    "subscribedAt": "2026-01-25T11:34:42.764Z"
   }
 ]
