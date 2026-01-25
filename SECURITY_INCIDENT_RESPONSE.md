@@ -19,7 +19,7 @@ Vos clés API ont été exposées publiquement sur GitHub. Suivez ces étapes **
 
 #### 1.2 YouTube API Key
 1. Allez sur https://console.cloud.google.com/apis/credentials
-2. Trouvez la clé : `AIzaSyBYLCKXpE9Wc2uEgevjUIdyijwxuhaXTwQ`
+2. Trouvez la clé qui était dans `.env.local` (commence par `AIzaSy...`)
 3. **SUPPRIMEZ** ou **régénérez** cette clé
 4. Créez une nouvelle clé si nécessaire
 5. Mettez à jour `.env.local` avec la nouvelle clé
