@@ -8,32 +8,30 @@ export default function NewsletterForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
     setMessage("");
 
     try {
-      const response = await fetch("/api/newsletter", {
+      // Submit to Netlify Forms (using native form submission)
+      const formData = new FormData(e.currentTarget);
+      
+      const response = await fetch("/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, firstName }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
       });
 
-      const data = await response.json();
-
-      if (data.ok) {
+      if (response.ok) {
         setStatus("success");
-        setMessage(data.message || "Inscription réussie ! Merci de vous être abonné.");
+        setMessage("Ton inscription est bien prise en compte ! Merci et à très vite dans ta boîte mail 📬");
         setEmail("");
         setFirstName("");
-        // Mark as subscriber in localStorage
         localStorage.setItem("newsletter_subscriber", "true");
       } else {
         setStatus("error");
-        setMessage(data.message || "Une erreur est survenue. Veuillez réessayer.");
+        setMessage("Une erreur est survenue. Veuillez réessayer.");
       }
     } catch (error) {
       setStatus("error");
@@ -42,7 +40,22 @@ export default function NewsletterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+    <form 
+      name="newsletter" 
+      method="POST" 
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      onSubmit={handleSubmit} 
+      className="w-full max-w-2xl"
+    >
+      {/* Netlify Forms requirement */}
+      <input type="hidden" name="form-name" value="newsletter" />
+      {/* Honeypot for spam protection */}
+      <p hidden>
+        <label>
+          Don't fill this out: <input name="bot-field" />
+        </label>
+      </p>
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-white/80">
@@ -51,6 +64,7 @@ export default function NewsletterForm() {
           <input
             type="text"
             id="firstName"
+            name="firstName"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 backdrop-blur-sm transition-all focus:border-[#00e0d1] focus:outline-none focus:ring-2 focus:ring-[#00e0d1]/30"
@@ -64,6 +78,7 @@ export default function NewsletterForm() {
           <input
             type="email"
             id="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
