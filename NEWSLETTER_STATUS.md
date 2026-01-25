@@ -78,10 +78,10 @@ Ouvrez http://localhost:3000 et utilisez le formulaire
 ## 🚀 Pour la production (Netlify)
 
 N'oubliez pas d'ajouter ces variables dans Netlify :
-- `RESEND_API_KEY` = re_ibj1PQd6_DmG9NGFuDc5X9ix3wh9QzFUL
+- `RESEND_API_KEY` = (votre clé API Resend)
 - `RESEND_FROM_EMAIL` = onboarding@resend.dev
 - `RESEND_FROM_NAME` = Le Débrief Podcast
-- `ADMIN_EMAIL` = wesleybentura@gmail.com
+- `ADMIN_EMAIL` = (votre email)
 
 ## 📈 Prochaines étapes (optionnelles)
 

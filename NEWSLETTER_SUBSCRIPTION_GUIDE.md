@@ -26,10 +26,10 @@ Le système d'inscription à la newsletter comprend maintenant :
 Les emails sont envoyés via **Resend** avec les paramètres suivants :
 
 ```env
-RESEND_API_KEY=re_ibj1PQd6_DmG9NGFuDc5X9ix3wh9QzFUL
+RESEND_API_KEY=your-resend-api-key-here
 RESEND_FROM_EMAIL=onboarding@resend.dev
 RESEND_FROM_NAME=Le Débrief Podcast
-ADMIN_EMAIL=wesleybentura@gmail.com
+ADMIN_EMAIL=your-email@example.com
 ```
 
 ### Personnaliser l'email d'expédition :
