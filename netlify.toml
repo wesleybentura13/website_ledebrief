@@ -7,9 +7,6 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[functions]
-  directory = "netlify/functions"
-
 [build.environment]
   # Optional: Disable Turbopack if you still have issues (uncomment to use Webpack instead)
   # NEXT_DISABLE_TURBOPACK = "1"

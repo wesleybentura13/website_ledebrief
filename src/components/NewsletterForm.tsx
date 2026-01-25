@@ -14,40 +14,23 @@ export default function NewsletterForm() {
     setMessage("");
 
     try {
-      // Encode form data for Netlify Forms
-      const formData = new FormData(e.currentTarget);
-      const formBody = new URLSearchParams();
-      
-      formData.forEach((value, key) => {
-        formBody.append(key, value.toString());
-      });
-      
-      const response = await fetch("/", {
+      const response = await fetch("/api/newsletter/brevo-subscribe", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formBody.toString(),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, firstName }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (data.ok) {
         setStatus("success");
-        setMessage("Ton inscription est bien prise en compte ! Merci et à très vite dans ta boîte mail 📬");
+        setMessage(data.message || "Ton inscription est bien prise en compte ! Merci et à très vite dans ta boîte mail 📬");
         setEmail("");
         setFirstName("");
         localStorage.setItem("newsletter_subscriber", "true");
-        
-        // Also trigger email notifications via API
-        try {
-          await fetch("/api/newsletter/send-notification", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, firstName }),
-          });
-        } catch (err) {
-          console.log("Email notification skipped");
-        }
       } else {
         setStatus("error");
-        setMessage("Une erreur est survenue. Veuillez réessayer.");
+        setMessage(data.message || "Une erreur est survenue. Veuillez réessayer.");
       }
     } catch (error) {
       setStatus("error");
@@ -56,22 +39,7 @@ export default function NewsletterForm() {
   };
 
   return (
-    <form 
-      name="newsletter" 
-      method="POST" 
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      onSubmit={handleSubmit} 
-      className="w-full max-w-2xl"
-    >
-      {/* Netlify Forms requirement */}
-      <input type="hidden" name="form-name" value="newsletter" />
-      {/* Honeypot for spam protection */}
-      <p hidden>
-        <label>
-          Don't fill this out: <input name="bot-field" />
-        </label>
-      </p>
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-white/80">
