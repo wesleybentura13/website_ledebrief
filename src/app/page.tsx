@@ -317,14 +317,17 @@ export default function Home() {
           </div>
 
           <div className="mb-16 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm md:p-12">
-            <p className="mb-6 text-xl leading-relaxed text-white/90 md:text-2xl">
-              Le Débrief, c&apos;est le podcast qui traite de tous les sujets à notre sauce. 
-              Nous vous proposons nos points de vue uniques que ce soit dans le sport, le cinéma, 
-              la finance, mais aussi bien d&apos;autres domaines.
+            <p className="mb-6 text-xl leading-relaxed text-white/90 md:text-2xl font-semibold">
+              On parle de tout. Sans filtre. Sans langue de bois.
+            </p>
+            <p className="mb-4 text-lg leading-relaxed text-white/80 md:text-xl">
+              Sport, cinéma, finance, actualité... Chaque semaine, on décortique les sujets 
+              qui nous passionnent avec nos vraies opinions et nos vrais débats.
             </p>
             <p className="text-lg leading-relaxed text-white/80 md:text-xl">
-              Chaque semaine, nous décortiquons l&apos;actualité, partageons nos réflexions et 
-              vous offrons une perspective différente sur les sujets qui nous passionnent.
+              Pas de formatage. Pas de discours préfabriqué. Juste deux frères, 
+              deux perspectives uniques, et des conversations authentiques qui vous 
+              donnent matière à réfléchir.
             </p>
           </div>
 
