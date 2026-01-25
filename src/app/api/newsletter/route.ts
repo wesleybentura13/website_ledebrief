@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { sendWelcomeEmail, notifyAdminNewSubscriber } from "@/lib/email";
 
 interface Subscriber {
   email: string;
@@ -59,18 +60,29 @@ export async function POST(request: Request) {
     }
 
     // Add new subscriber
-    subscribers.push({
+    const newSubscriber = {
       email: email.toLowerCase(),
       firstName: firstName || undefined,
       subscribedAt: new Date().toISOString(),
-    });
-
+    };
+    
+    subscribers.push(newSubscriber);
     fs.writeFileSync(subscribersPath, JSON.stringify(subscribers, null, 2));
 
     console.info("[newsletter] new subscriber", { email, firstName });
 
+    // Send welcome email to subscriber (don't await to avoid blocking response)
+    sendWelcomeEmail(email, firstName).catch((err) => {
+      console.error("[newsletter] Failed to send welcome email:", err);
+    });
+
+    // Notify admin of new subscriber (don't await to avoid blocking response)
+    notifyAdminNewSubscriber(email, firstName).catch((err) => {
+      console.error("[newsletter] Failed to notify admin:", err);
+    });
+
     return NextResponse.json(
-      { ok: true, message: "Inscription réussie ! Merci de vous être abonné." },
+      { ok: true, message: "Ton inscription est bien prise en compte ! Merci et à très vite dans ta boîte mail 📬" },
       { status: 200 },
     );
   } catch (error) {
