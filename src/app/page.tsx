@@ -189,7 +189,7 @@ export default function Home() {
               href="https://www.instagram.com/ledebrief_podcast/"
               target="_blank"
               rel="noreferrer"
-              className="group flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] transition-all hover:scale-110 hover:shadow-[0_0_30px_rgba(253,29,29,0.5)]"
+              className="group flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] transition-all hover:scale-110 hover:shadow-[0_0_30px_rgba(253,29,29,0.5)]"
               aria-label="Instagram"
             >
               <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ export default function Home() {
               href="https://www.tiktok.com/@ledebrief_podcast"
               target="_blank"
               rel="noreferrer"
-              className="group flex h-12 w-12 items-center justify-center rounded-full bg-black border border-white/20 transition-all hover:scale-110 hover:border-white/40"
+              className="group flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-black border border-white/20 transition-all hover:scale-110 hover:border-white/40"
               aria-label="TikTok"
             >
               <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
