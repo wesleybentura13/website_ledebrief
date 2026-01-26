@@ -322,7 +322,7 @@ export default function Home() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             {/* Wesley */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#00e0d1]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#00e0d1]/30 hover:scale-[1.02]">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#00e0d1]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#00e0d1]/30 hover:scale-[1.02] flex flex-col">
               <div className="relative mb-6 flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-6 sm:text-left">
                 <div className="relative h-20 w-20 sm:h-24 sm:w-24 mb-4 sm:mb-0 overflow-hidden rounded-full border-2 border-[#00e0d1]/30 shrink-0">
                   <Image
@@ -346,7 +346,7 @@ export default function Home() {
                 Son parcours l&apos;a mené de la France à la Chine, où il a développé une 
                 expérience internationale enrichissante, avant de s&apos;installer en Israël.
               </p>
-              <div className="flex justify-center sm:justify-start">
+              <div className="flex justify-center sm:justify-start mt-auto">
                 <a
                   href="https://www.linkedin.com/in/wesleybentura/"
                   target="_blank"
@@ -362,7 +362,7 @@ export default function Home() {
             </div>
 
             {/* Sacha */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0c79c5]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#0c79c5]/30 hover:scale-[1.02]">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0c79c5]/10 to-white/5 p-6 sm:p-8 backdrop-blur-sm transition-all hover:border-[#0c79c5]/30 hover:scale-[1.02] flex flex-col">
               <div className="relative mb-6 flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-6 sm:text-left">
                 <div className="relative h-20 w-20 sm:h-24 sm:w-24 mb-4 sm:mb-0 overflow-hidden rounded-full border-2 border-[#0c79c5]/30 shrink-0">
                   <Image
@@ -386,7 +386,7 @@ export default function Home() {
                 Installé en Belgique, il apporte une perspective pédagogique et une approche 
                 méthodique à nos débats.
               </p>
-              <div className="flex justify-center sm:justify-start">
+              <div className="flex justify-center sm:justify-start mt-auto">
                 <a
                   href="https://www.linkedin.com/in/sacha-bentura-47854421b/"
                   target="_blank"
