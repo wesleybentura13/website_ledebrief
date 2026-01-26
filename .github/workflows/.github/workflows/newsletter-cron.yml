@@ -1,0 +1,16 @@
+name: Auto-send newsletter
+
+on:
+  schedule:
+    - cron: "0 */3 * * *" # toutes les 3 heures
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger auto-send endpoint
+        run: |
+          curl -sS -X POST "${{ secrets.SITE_URL }}/api/newsletter/auto-send" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
