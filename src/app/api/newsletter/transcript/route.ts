@@ -121,108 +121,72 @@ export async function GET(request: Request) {
       );
     }
 
-    // Check if captions exist using YouTube Data API (if available)
+    // Check if captions exist using YouTube Data API (best-effort)
     const apiKey = process.env.YOUTUBE_API_KEY;
     let captionsAvailable = false;
     if (apiKey) {
       try {
-        const captionsUrl = `https://www.googleapis.com/youtube/v3/captions?key=${apiKey}&videoId=${videoId}&part=snippet`;
-        const captionsData: any = await new Promise((resolve, reject) => {
-          https.get(captionsUrl, { rejectUnauthorized: false }, (res) => {
-            let data = "";
-            res.on("data", (chunk) => { data += chunk.toString(); });
-            res.on("end", () => {
-              try {
-                resolve(JSON.parse(data));
-              } catch (e) {
-                reject(e);
-              }
-            });
-          }).on("error", reject);
-        });
-        captionsAvailable = captionsData.items && captionsData.items.length > 0;
-      } catch (error) {
+        const captionsUrl = `https://www.googleapis.com/youtube/v3/captions?key=${apiKey}&videoId=${encodeURIComponent(videoId)}&part=snippet`;
+        const captionsRes = await fetch(captionsUrl, { cache: "no-store" });
+        if (captionsRes.ok) {
+          const captionsData: any = await captionsRes.json();
+          captionsAvailable = Array.isArray(captionsData?.items) && captionsData.items.length > 0;
+        }
+      } catch {
         // Ignore API check errors, continue with transcript fetch
       }
     }
 
-    // Temporarily disable SSL verification for youtube-transcript
-    // This is needed due to SSL certificate issues on the system
-    const originalRejectUnauthorized = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-    let transcriptItems;
+    let transcriptItems: any[] | undefined;
     let language = "unknown";
 
     try {
-      // Try to fetch transcript with different language options
+      transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, { lang: "fr" });
+      language = "fr";
+    } catch (frError) {
       try {
-        // Try French first
-        transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, {
-          lang: "fr",
-        });
-        language = "fr";
-      } catch (frError) {
+        transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, { lang: "en" });
+        language = "en";
+      } catch (enError) {
         try {
-          // Try English
-          transcriptItems = await YoutubeTranscript.fetchTranscript(videoId, {
-            lang: "en",
+          transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
+          language = transcriptItems?.[0]?.lang || "auto";
+        } catch (autoError) {
+          console.error("All transcript fetch attempts failed:", {
+            frError: frError instanceof Error ? frError.message : String(frError),
+            enError: enError instanceof Error ? enError.message : String(enError),
+            autoError: autoError instanceof Error ? autoError.message : String(autoError),
           });
-          language = "en";
-        } catch (enError) {
-          try {
-            // Try without specifying language (auto-detect)
-            transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
-            language = transcriptItems[0]?.lang || "auto";
-          } catch (autoError) {
-            console.error("All transcript fetch attempts failed:", {
-              frError: frError instanceof Error ? frError.message : String(frError),
-              enError: enError instanceof Error ? enError.message : String(enError),
-              autoError: autoError instanceof Error ? autoError.message : String(autoError),
+
+          // Fallback: page scraping
+          console.log("youtube-transcript failed, trying alternative page-scraping method...");
+          const pageTranscript = await fetchTranscriptFromPage(videoId);
+          if (pageTranscript && pageTranscript.length > 0) {
+            return NextResponse.json({
+              videoId,
+              transcript: pageTranscript,
+              language: "fr",
+              length: pageTranscript.length,
+              method: "page-scraping",
             });
-            
-            // Try alternative method: fetch from YouTube page directly
-            console.log('youtube-transcript failed, trying alternative page-scraping method...');
-            const pageTranscript = await fetchTranscriptFromPage(videoId);
-            
-            if (pageTranscript && pageTranscript.length > 0) {
-              // Successfully got transcript from page - return it
-              return NextResponse.json({
-                videoId,
-                transcript: pageTranscript,
-                language: "fr",
-                length: pageTranscript.length,
-                method: "page-scraping",
-              });
-            }
-            
-            // Provide more helpful error message if captions exist but can't be accessed
-            if (captionsAvailable) {
-              throw new Error(
-                `Captions exist but cannot be accessed via API or page scraping. The youtube-transcript library failed and the alternative method also failed. This might be a temporary YouTube issue. Try again in a few minutes.`
-              );
-            }
-            
+          }
+
+          if (captionsAvailable) {
             throw new Error(
-              `Impossible de récupérer la transcription. Vérifiez que les sous-titres sont activés ET PUBLIÉS pour cette vidéo. Erreurs: ${frError instanceof Error ? frError.message : String(frError)}`
+              "Captions exist but cannot be accessed via API or page scraping. Try again later."
             );
           }
+
+          throw new Error(
+            `Impossible de récupérer la transcription. Vérifiez que les sous-titres sont activés ET PUBLIÉS pour cette vidéo. Erreur: ${
+              frError instanceof Error ? frError.message : String(frError)
+            }`
+          );
         }
-      }
-    } finally {
-      // Restore original SSL setting
-      if (originalRejectUnauthorized !== undefined) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = originalRejectUnauthorized;
-      } else {
-        delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
       }
     }
 
-    // Combine all transcript items into full text
-    const fullTranscript = transcriptItems
-      .map((item) => item.text)
-      .join(" ");
-
+    const fullTranscript = (transcriptItems || []).map((item: any) => item.text).join(" ");
     if (!fullTranscript || fullTranscript.trim().length === 0) {
       return NextResponse.json(
         {
@@ -243,22 +207,12 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error fetching transcript:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    
+
     return NextResponse.json(
       {
         error: "Failed to fetch transcript",
         details: errorMessage,
         note: "IMPORTANT: Captions must be PUBLISHED, not just enabled. In YouTube Studio: Go to Videos > Select video > Subtitles > Make sure the caption track shows 'Published' status (not 'Draft'). If it says 'Draft', click 'Publish'.",
-        troubleshooting: [
-          "1. Go to YouTube Studio: https://studio.youtube.com/",
-          "2. Select your video",
-          "3. Click 'Subtitles' in the left menu",
-          "4. Find your French caption track",
-          "5. Make sure it says 'Published' (not 'Draft')",
-          "6. If it says 'Draft', click the three dots (...) and select 'Publish'",
-          "7. Wait 1-2 minutes for YouTube to process",
-          "8. Try again"
-        ],
       },
       { status: 500 }
     );

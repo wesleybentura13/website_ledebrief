@@ -31,6 +31,8 @@ const formatDate = (date: string) => {
   }
 };
 
+const YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+
 function formatViewCount(count: number): string {
   if (count >= 1000000) {
     return `${(count / 1000000).toFixed(1)}M`;
@@ -183,6 +185,30 @@ export default function Home() {
             >
               <svg className="h-6 w-6 sm:h-8 sm:w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.779 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.24 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+            </a>
+            <a
+              href="https://www.deezer.com/fr/show/1001898661"
+              target="_blank"
+              rel="noreferrer"
+              className="group flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-black border border-white/20 transition-all hover:scale-110 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,0,0,0.22)]"
+              aria-label="Deezer"
+            >
+              <svg className="h-6 w-6 sm:h-8 sm:w-8" viewBox="0 0 24 24" aria-hidden="true">
+                <defs>
+                  <linearGradient id="deezerGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#00e0d1" />
+                    <stop offset="50%" stopColor="#0c79c5" />
+                    <stop offset="100%" stopColor="#ff2d55" />
+                  </linearGradient>
+                </defs>
+                {/* Minimal “equalizer” mark (Deezer-like) */}
+                <g fill="url(#deezerGradient)">
+                  <rect x="4" y="12" width="3" height="8" rx="1" />
+                  <rect x="8.5" y="9" width="3" height="11" rx="1" />
+                  <rect x="13" y="6" width="3" height="14" rx="1" />
+                  <rect x="17.5" y="10" width="3" height="10" rx="1" />
+                </g>
               </svg>
             </a>
             <a
@@ -422,18 +448,27 @@ export default function Home() {
           ) : episodes.length > 0 ? (
             <>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {episodes.slice(0, episodesToShow).map((episode, index) => (
-                  <a
-                    key={episode.slug}
-                    href={episode.link || `https://www.youtube.com/watch?v=${episode.youtubeId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/30"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
+                {episodes.slice(0, episodesToShow).map((episode, index) => {
+                  const youtubeId = YOUTUBE_ID_RE.test(episode.youtubeId) ? episode.youtubeId : null;
+                  const href = youtubeId
+                    ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}`
+                    : "#";
+                  const thumbnail = youtubeId
+                    ? `https://i.ytimg.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`
+                    : "/logo.png";
+
+                  return (
+                    <a
+                      key={episode.slug}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-[#00e0d1]/30"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
                     <div className="relative aspect-video overflow-hidden">
                       <img
-                        src={episode.thumbnailUrl}
+                        src={thumbnail}
                         alt={episode.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -457,8 +492,9 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                  </a>
-                ))}
+                    </a>
+                  );
+                })}
               </div>
 
               {episodes.length > episodesToShow && (

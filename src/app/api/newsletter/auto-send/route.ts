@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
 /**
  * AUTO-SEND NEWSLETTER API
@@ -13,12 +11,6 @@ import path from "path";
  * 
  * Call this endpoint via a cron job (e.g., every hour)
  */
-
-interface SentNewsletter {
-  videoId: string;
-  title: string;
-  sentAt: string;
-}
 
 export async function POST(request: Request) {
   try {
@@ -68,29 +60,20 @@ export async function POST(request: Request) {
     const latestEpisode = episodes[0];
     console.log(`[Auto Newsletter] Latest episode: ${latestEpisode.title}`);
 
-    // Step 3: Check if we already sent a newsletter for this episode
-    const sentNewslettersPath = path.join(process.cwd(), "data", "sent-newsletters.json");
-    let sentNewsletters: SentNewsletter[] = [];
+    // Step 3: Check if we already sent a campaign for this episode (Brevo is our source of truth)
+    const episodeKey = `episode-${latestEpisode.youtubeId}`;
+    const existingCampaign = await findBrevoCampaignByName(episodeKey);
 
-    try {
-      if (fs.existsSync(sentNewslettersPath)) {
-        const data = fs.readFileSync(sentNewslettersPath, "utf-8");
-        sentNewsletters = JSON.parse(data);
-      }
-    } catch (err) {
-      console.error("[Auto Newsletter] Error reading sent newsletters:", err);
-    }
-
-    const alreadySent = sentNewsletters.some(
-      (sent) => sent.videoId === latestEpisode.youtubeId
-    );
-
-    if (alreadySent) {
-      console.log(`[Auto Newsletter] Newsletter already sent for: ${latestEpisode.title}`);
+    if (existingCampaign) {
+      console.log(
+        `[Auto Newsletter] Campaign already exists (${existingCampaign.status}) for: ${latestEpisode.title}`
+      );
       return NextResponse.json({
         ok: true,
         message: "Newsletter already sent for this episode",
         episode: latestEpisode.title,
+        campaignId: existingCampaign.id,
+        status: existingCampaign.status,
       });
     }
 
@@ -100,12 +83,8 @@ export async function POST(request: Request) {
 
     try {
       const transcriptResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/newsletter/transcript`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoId: latestEpisode.youtubeId }),
-        }
+        `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/newsletter/transcript?videoId=${encodeURIComponent(latestEpisode.youtubeId)}`,
+        { cache: "no-store" }
       );
 
       if (transcriptResponse.ok) {
@@ -138,19 +117,6 @@ export async function POST(request: Request) {
         { ok: false, error: "Failed to send newsletter" },
         { status: 500 }
       );
-    }
-
-    // Step 7: Mark this episode as sent
-    sentNewsletters.push({
-      videoId: latestEpisode.youtubeId,
-      title: latestEpisode.title,
-      sentAt: new Date().toISOString(),
-    });
-
-    try {
-      fs.writeFileSync(sentNewslettersPath, JSON.stringify(sentNewsletters, null, 2));
-    } catch (err) {
-      console.error("[Auto Newsletter] Error saving sent newsletters:", err);
     }
 
     console.log("[Auto Newsletter] ✅ Newsletter sent successfully!");
@@ -266,67 +232,139 @@ async function sendNewsletterToSubscribers(
   }
 
   try {
-    const https = require("https");
-
-    // Create email campaign in Brevo
     const emailHtml = generateNewsletterTemplate(title, teaser, videoId, thumbnailUrl);
+    const episodeKey = `episode-${videoId}`;
 
-    const campaignData = {
+    // 1) Create email campaign (marketing) targeting the list
+    const campaignId = await createBrevoEmailCampaign({
+      name: episodeKey,
+      subject: `🎙️ Nouvel épisode : ${title}`,
       sender: {
         name: SENDER_NAME,
         email: SENDER_EMAIL,
       },
-      name: `Nouvel épisode : ${title}`,
-      subject: `🎙️ Nouvel épisode : ${title}`,
       htmlContent: emailHtml,
       recipients: {
         listIds: [parseInt(BREVO_LIST_ID)],
       },
-    };
-
-    const payload = JSON.stringify(campaignData);
-
-    const response: any = await new Promise((resolve, reject) => {
-      const options = {
-        hostname: "api.brevo.com",
-        port: 443,
-        path: "/v3/smtp/email",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": BREVO_API_KEY,
-          "Content-Length": Buffer.byteLength(payload),
-        },
-        rejectUnauthorized: process.env.NODE_ENV === "production",
-      };
-
-      const req = https.request(options, (res: any) => {
-        let data = "";
-        res.on("data", (chunk: Buffer) => (data += chunk));
-        res.on("end", () => {
-          resolve({
-            statusCode: res.statusCode,
-            body: data,
-          });
-        });
-      });
-
-      req.on("error", reject);
-      req.write(payload);
-      req.end();
     });
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      console.log("[Auto Newsletter] ✅ Newsletter sent to all subscribers");
-      return true;
-    } else {
-      console.error("[Auto Newsletter] Brevo API error:", response.statusCode, response.body);
+    if (!campaignId) {
+      console.error("[Auto Newsletter] Failed to create campaign");
       return false;
     }
+
+    // 2) Send now
+    const sentNow = await sendBrevoCampaignNow(campaignId);
+    if (!sentNow) return false;
+
+    console.log(`[Auto Newsletter] ✅ Campaign sent: ${campaignId}`);
+    return true;
   } catch (error) {
     console.error("[Auto Newsletter] Error sending newsletter:", error);
     return false;
   }
+}
+
+type BrevoCampaign = { id: number; name: string; status?: string };
+
+async function findBrevoCampaignByName(name: string): Promise<BrevoCampaign | null> {
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+  if (!BREVO_API_KEY) return null;
+
+  try {
+    // Scan the last campaigns; this is our durable “already sent” tracking.
+    const result = await brevoRequest("GET", "/v3/emailCampaigns?limit=50&offset=0", BREVO_API_KEY);
+    if (!result.ok) return null;
+
+    const campaigns: any[] = result.json?.campaigns || [];
+    const match = campaigns.find((c) => c?.name === name);
+    if (!match) return null;
+
+    return { id: match.id, name: match.name, status: match.status };
+  } catch (e) {
+    console.error("[Auto Newsletter] Failed to check existing campaigns:", e);
+    return null;
+  }
+}
+
+async function createBrevoEmailCampaign(payload: any): Promise<number | null> {
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+  if (!BREVO_API_KEY) return null;
+
+  const result = await brevoRequest("POST", "/v3/emailCampaigns", BREVO_API_KEY, payload);
+  if (!result.ok) {
+    console.error("[Auto Newsletter] Campaign create failed:", result.statusCode, result.text);
+    return null;
+  }
+
+  const id = result.json?.id;
+  return typeof id === "number" ? id : null;
+}
+
+async function sendBrevoCampaignNow(campaignId: number): Promise<boolean> {
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+  if (!BREVO_API_KEY) return false;
+
+  const result = await brevoRequest("POST", `/v3/emailCampaigns/${campaignId}/sendNow`, BREVO_API_KEY);
+  if (!result.ok) {
+    console.error("[Auto Newsletter] sendNow failed:", result.statusCode, result.text);
+    return false;
+  }
+  return true;
+}
+
+async function brevoRequest(
+  method: "GET" | "POST",
+  path: string,
+  apiKey: string,
+  body?: any
+): Promise<{ ok: boolean; statusCode: number; text: string; json?: any }> {
+  const https = require("https");
+
+  const payload = body ? JSON.stringify(body) : "";
+  const headers: Record<string, string | number> = {
+    "api-key": apiKey,
+    Accept: "application/json",
+  };
+
+  if (method === "POST") {
+    headers["Content-Type"] = "application/json";
+    headers["Content-Length"] = Buffer.byteLength(payload);
+  }
+
+  const response: any = await new Promise((resolve, reject) => {
+    const options = {
+      hostname: "api.brevo.com",
+      port: 443,
+      path,
+      method,
+      headers,
+      // Fix SSL certificate issue in local development
+      rejectUnauthorized: process.env.NODE_ENV === "production",
+    };
+
+    const req = https.request(options, (res: any) => {
+      let data = "";
+      res.on("data", (chunk: Buffer) => (data += chunk));
+      res.on("end", () => resolve({ statusCode: res.statusCode, body: data }));
+    });
+
+    req.on("error", reject);
+    if (method === "POST") req.write(payload);
+    req.end();
+  });
+
+  const statusCode = response.statusCode || 0;
+  const text = response.body || "";
+  let json: any = undefined;
+  try {
+    json = text ? JSON.parse(text) : undefined;
+  } catch {
+    // ignore
+  }
+
+  return { ok: statusCode >= 200 && statusCode < 300, statusCode, text, json };
 }
 
 function generateNewsletterTemplate(
@@ -337,6 +375,7 @@ function generateNewsletterTemplate(
 ): string {
   const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
   const spotifyUrl = "https://open.spotify.com/show/2MA341D762SdA7azTQYdxw";
+  const deezerUrl = "https://www.deezer.com/fr/show/1001898661";
 
   return `
 <!DOCTYPE html>
@@ -424,6 +463,8 @@ ${teaser}
                 <a href="https://www.youtube.com/@ledebrief_podcast" style="margin: 0 8px; color: #FF0000; text-decoration: none; font-size: 14px; font-weight: 500;">YouTube</a>
                 <span style="color: rgba(255, 255, 255, 0.3);">•</span>
                 <a href="${spotifyUrl}" style="margin: 0 8px; color: #1DB954; text-decoration: none; font-size: 14px; font-weight: 500;">Spotify</a>
+                <span style="color: rgba(255, 255, 255, 0.3);">•</span>
+                <a href="${deezerUrl}" style="margin: 0 8px; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 500;">Deezer</a>
                 <span style="color: rgba(255, 255, 255, 0.3);">•</span>
                 <a href="https://www.instagram.com/ledebrief_podcast/" style="margin: 0 8px; color: #E4405F; text-decoration: none; font-size: 14px; font-weight: 500;">Instagram</a>
                 <span style="color: rgba(255, 255, 255, 0.3);">•</span>

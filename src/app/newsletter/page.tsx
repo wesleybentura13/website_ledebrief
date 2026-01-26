@@ -141,7 +141,7 @@ export default function NewsletterPage() {
                     </div>
                   </div>
                   <a
-                    href={`https://www.youtube.com/watch?v=${item.youtubeId}`}
+                    href={`https://www.youtube.com/watch?v=${encodeURIComponent(item.youtubeId)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF0000] shadow-md transition hover:scale-110 hover:shadow-lg"

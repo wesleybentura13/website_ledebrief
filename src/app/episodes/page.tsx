@@ -30,6 +30,8 @@ interface Episode {
   viewCount?: number;
 }
 
+const YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+
 // Format view count (e.g., 1234 -> "1.2K", 1234567 -> "1.2M")
 function formatViewCount(count: number): string {
   if (count >= 1000000) {
@@ -164,15 +166,24 @@ export default function EpisodesPage() {
                   {episodes.length} épisode{episodes.length > 1 ? 's' : ''} disponible{episodes.length > 1 ? 's' : ''}
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {episodes.map((episode) => (
-                  <article
-                    key={episode.slug}
-                    className="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition hover:shadow-lg hover:ring-black/10"
-                  >
-                    <Link href={episode.link || `https://www.youtube.com/watch?v=${episode.youtubeId}`} target="_blank" rel="noopener noreferrer">
+                  {episodes.map((episode) => {
+                    const youtubeId = YOUTUBE_ID_RE.test(episode.youtubeId) ? episode.youtubeId : null;
+                    const href = youtubeId
+                      ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}`
+                      : "#";
+                    const thumbnail = youtubeId
+                      ? `https://i.ytimg.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`
+                      : "/logo.png";
+
+                    return (
+                      <article
+                        key={episode.slug}
+                        className="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition hover:shadow-lg hover:ring-black/10"
+                      >
+                        <Link href={href} target="_blank" rel="noopener noreferrer">
                       <div className="relative aspect-video w-full overflow-hidden bg-slate-200">
                         <img
-                          src={episode.thumbnailUrl}
+                              src={thumbnail}
                           alt={episode.title}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
@@ -209,9 +220,10 @@ export default function EpisodesPage() {
                           )}
                         </div>
                       </div>
-                    </Link>
-                  </article>
-                  ))}
+                        </Link>
+                      </article>
+                    );
+                  })}
                 </div>
               </>
             ) : (
